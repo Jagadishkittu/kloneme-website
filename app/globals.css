@@ -16,6 +16,13 @@
   --lime: #7cb518;
   --lagoon: #17a398;
   --lilac: #8466eb;
+  /* Deeper shades (v9's -d tones): accents and fills on light backgrounds */
+  --sky-d: #1d5aa8;
+  --berry-d: #8e2a67;
+  --coral-d: #a8321f;
+  --lime-d: #45700a;
+  --lagoon-d: #0b6e66;
+  --lilac-d: #5236b8;
 
   --gut: clamp(16px, 4vw, 40px);
   color-scheme: light;

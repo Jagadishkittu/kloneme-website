@@ -1,6 +1,8 @@
+import Calendar from "@/components/sections/Calendar";
 import Header from "@/components/sections/Header";
 import Hero from "@/components/sections/Hero";
 import MeetKlo from "@/components/sections/MeetKlo";
+import Privacy from "@/components/sections/Privacy";
 import Problem from "@/components/sections/Problem";
 import Streams from "@/components/sections/Streams";
 import TwinMap from "@/components/sections/TwinMap";
@@ -15,6 +17,8 @@ export default function Home() {
         <MeetKlo />
         <Problem />
         <Streams />
+        <Calendar />
+        <Privacy />
       </main>
     </>
   );

@@ -35,7 +35,8 @@
   align-items: flex-start;
   gap: var(--gap);
   width: max-content;
-  padding: 0 var(--side);
+  /* Room on the right so the row can scroll until the last card (Vault) sits in the middle */
+  padding: 0 max(var(--side), calc(50% - var(--cw) / 2)) 0 var(--side);
   will-change: transform;
 }
 

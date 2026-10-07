@@ -1,0 +1,686 @@
+/* ============================================================
+   Calendar (section 6) — Scroll Deal, paper and twin
+   A dark section that pins for about two and a half screens of scrolling (CalendarDeal.tsx). The
+   v9 heading and subtext sit in the middle; scrolling deals v9's five calendar periods up from
+   below, one at a time, into a fan across the heading (outer cards tilt most, the middle one sits
+   lowest and straight, in front). Scrolling back up takes them away again. As the cards cover it,
+   the heading fades back.
+   Each card has two sides. Paper side: a page from a wall calendar — binder rings, the period's
+   emoji and name, its events with stream-colour dots, a folded corner ("This week" is the amber
+   page). Twin side: dark glass with a slowly drifting aurora in the period's stream colours, Klo,
+   the same dates as glass nudges, and an amber bar.
+   Hover (or keyboard focus): the card straightens, lifts and turns over to its twin side, then
+   tilts towards the pointer while a soft light follows it and a light runs round its edge.
+   Mobile: tap the top card to turn it over, tap again to tuck it under the pile.
+   JS sets --enter (section scrolling in, 0→1) and --cover (cards landing, 0→1) on the section,
+   --e (that card's landing, eased, 0→1) and --px/--py (pointer, -0.5…0.5) on each card.
+   Inside a card, cqw is the card's width (a card is 100 × 133.3cqw).
+   ============================================================ */
+
+@property --edge {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.section {
+  /* Card size: by width, capped so the fan always fits the screen's height */
+  --cw: min(18vw, 31svh, 310px);
+  --ch: calc(var(--cw) * 4 / 3);
+  /* Middle of the heading */
+  --mid: 42svh;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --enter: 0;
+  --cover: 0;
+  position: relative;
+  height: 350svh;
+  background: var(--ink);
+  color: var(--bg);
+  /* Transition in: rounded top corners that flatten as the section scrolls in */
+  border-radius: calc((1 - var(--enter)) * 56px) calc((1 - var(--enter)) * 56px) 0 0;
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: clip;
+}
+
+/* Faint sky and amber light behind the heading */
+.sticky::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(42% 30% at 38% 40%, rgba(59, 139, 235, 0.14), rgba(59, 139, 235, 0) 70%),
+    radial-gradient(36% 26% at 64% 46%, rgba(245, 179, 31, 0.08), rgba(245, 179, 31, 0) 70%);
+}
+
+/* ---------- Heading and subtext ---------- */
+.intro {
+  position: absolute;
+  inset-inline: 0;
+  top: var(--mid);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-inline: var(--gut);
+  text-align: center;
+  translate: 0 -50%;
+  /* Fades back as the cards cover it */
+  opacity: calc(1 - 0.55 * var(--cover));
+  scale: calc(1 - 0.03 * var(--cover));
+}
+
+/* Kicker, heading and subtext rise in one after another as the section scrolls in */
+.intro > * {
+  --a: clamp(0, (var(--enter) - var(--at)) * 2.5, 1);
+  opacity: var(--a);
+  translate: 0 calc((1 - var(--a)) * 40px);
+}
+.intro > :nth-child(1) {
+  --at: 0.25;
+}
+.intro > :nth-child(2) {
+  --at: 0.35;
+}
+.intro > :nth-child(3) {
+  --at: 0.45;
+}
+
+/* ---------- The deck ---------- */
+.deck {
+  position: absolute;
+  left: 50%;
+  top: var(--mid);
+  width: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Each card flies up from below the screen (and in from nearer the middle), turning from a steep
+   angle to its resting tilt and settling from slightly larger */
+.card {
+  --e: 0;
+  --px: 0;
+  --py: 0;
+  --x: var(--fx);
+  --y: var(--fy);
+  --r: var(--fr);
+  --spin: var(--fs);
+  position: absolute;
+  left: calc(var(--cw) / -2);
+  top: calc(var(--ch) / -2);
+  z-index: var(--z);
+  width: var(--cw);
+  height: var(--ch);
+  container-type: inline-size;
+  translate:
+    calc(var(--x) * var(--cw) * (0.4 + 0.6 * var(--e)))
+    calc(var(--y) * var(--ch) + (1 - var(--e)) * (60svh + var(--ch)));
+  rotate: calc((var(--r) + (1 - var(--e)) * var(--spin)) * 1deg);
+  scale: calc(1.06 - 0.06 * var(--e));
+  /* A turned card stays on top until it has settled back */
+  transition: z-index 0s 0.6s;
+}
+
+/* Shadow under the card, growing as it lands (it stays put when the card lifts) */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 6% 4% -1%;
+  border-radius: 7cqw;
+  box-shadow: 0 8cqw 16cqw -4cqw rgba(0, 0, 0, 0.75);
+  opacity: var(--e);
+  scale: calc(0.86 + 0.14 * var(--e));
+}
+
+/* The two sides turn together */
+.face {
+  position: absolute;
+  inset: 0;
+  border-radius: 6cqw;
+  transform-style: preserve-3d;
+  transition: transform 0.7s var(--ease);
+  -webkit-tap-highlight-color: transparent;
+}
+.face:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.front,
+.back {
+  position: absolute;
+  inset: 0;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+.back {
+  transform: rotateY(180deg);
+}
+
+/* Turned over: straightened, lifted and tilting towards the pointer */
+@media (hover: hover) {
+  .card[data-in]:hover {
+    z-index: 20;
+    transition-delay: 0s;
+  }
+  .card[data-in]:hover .face {
+    transform: perspective(1000px) rotate(calc(var(--r) * -1deg)) translateY(-5cqw) scale(1.06)
+      rotateX(calc(var(--py) * -12deg)) rotateY(calc(180deg + var(--px) * 14deg));
+  }
+}
+.card[data-in]:focus-within {
+  z-index: 20;
+  transition-delay: 0s;
+}
+.card[data-in] .face:focus-visible {
+  transform: perspective(1000px) rotate(calc(var(--r) * -1deg)) translateY(-5cqw) scale(1.06) rotateY(180deg);
+}
+/* Mobile: the tapped top card */
+.card[data-open] .face {
+  transform: perspective(1000px) rotate(calc(var(--r) * -1deg)) rotateY(180deg);
+}
+
+/* ---------- Paper side: a wall-calendar page ---------- */
+.page {
+  --paper: #fdfbf7;
+  --fold: 11cqw;
+  position: absolute;
+  inset: 0;
+  border-radius: 6cqw;
+  background:
+    radial-gradient(120% 50% at 50% 0%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0) 70%),
+    var(--paper);
+  color: var(--ink);
+  /* Folded bottom-right corner (the top is left open so the rings can stand above it) */
+  clip-path: polygon(
+    0 -8cqw,
+    100% -8cqw,
+    100% calc(100% - var(--fold)),
+    calc(100% - var(--fold)) 100%,
+    0 100%
+  );
+}
+/* "This week" is the amber page */
+.page[data-now] {
+  --paper: #fdefcc;
+}
+
+/* The folded-over corner */
+.page::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: var(--fold);
+  height: var(--fold);
+  border-radius: 0 0 0 2cqw;
+  background: linear-gradient(to bottom right, #e6dfd0 0 50%, transparent 50%);
+  filter: drop-shadow(-0.6cqw -0.6cqw 0.8cqw rgba(23, 20, 29, 0.14));
+}
+.page[data-now]::after {
+  background: linear-gradient(to bottom right, #f2d791 0 50%, transparent 50%);
+}
+
+/* Binding strip with two rings */
+.binding {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 10cqw;
+  border-radius: 6cqw 6cqw 0 0;
+  background: linear-gradient(180deg, #2c2834, #17141d);
+}
+.page[data-now] .binding {
+  background: linear-gradient(180deg, #f8c64d, var(--accent));
+}
+.binding i {
+  position: absolute;
+  top: 3cqw;
+  left: 25cqw;
+  width: 4.4cqw;
+  height: 4.4cqw;
+  border-radius: 50%;
+  background: #0c0b0e;
+  box-shadow: inset 0 0.5cqw 0.8cqw rgba(0, 0, 0, 0.6);
+}
+.binding i + i {
+  left: auto;
+  right: 25cqw;
+}
+/* The metal ring passing through each hole */
+.binding i::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 1.6cqw;
+  width: 2.4cqw;
+  height: 8.4cqw;
+  translate: -50% 0;
+  border-radius: 1.4cqw;
+  background: linear-gradient(90deg, #3b3842, #d2d0d9 45%, #4a4652);
+  box-shadow: 0 0.6cqw 0.8cqw rgba(0, 0, 0, 0.3);
+}
+
+.period {
+  position: absolute;
+  top: 17cqw;
+  left: 8cqw;
+  right: 8cqw;
+  display: flex;
+  align-items: center;
+  gap: 2.4cqw;
+  margin: 0;
+  font-size: max(9px, 4.4cqw);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #6f6a75;
+}
+.page[data-now] .period {
+  color: #8a5d00;
+}
+
+/* The period's emoji, gently bouncing (as in v9) */
+.emo {
+  display: inline-grid;
+  place-items: center;
+  font-size: 6cqw;
+  line-height: 1;
+  letter-spacing: 0;
+}
+.emo > span {
+  display: inline-block;
+  transform-origin: 50% 90%;
+  animation: bounce 2.6s ease-in-out calc(var(--z) * -0.5s) infinite;
+}
+
+.events {
+  position: absolute;
+  top: 29cqw;
+  left: 8cqw;
+  right: 8cqw;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.events li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 3.6cqw 0 3.6cqw 6.4cqw;
+  border-top: 1px solid rgba(23, 20, 29, 0.08);
+}
+.events li:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+.events li::before {
+  content: "";
+  position: absolute;
+  top: 5.2cqw;
+  left: 0;
+  width: 2.8cqw;
+  height: 2.8cqw;
+  border-radius: 50%;
+  background: var(--dot);
+}
+.events li:first-child::before {
+  top: 1.6cqw;
+}
+.events b {
+  font-size: max(10px, 5.4cqw);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+.events small {
+  margin-top: 0.8cqw;
+  font-size: max(8px, 4.2cqw);
+  color: var(--muted);
+}
+
+/* ---------- Twin side ---------- */
+.tile {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 6cqw;
+  background: linear-gradient(165deg, #1f1b27 0%, #131118 55%, #0b0a0f 100%);
+}
+
+/* Fine dot texture, fading out towards the bottom */
+.tile::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.11) 0.45cqw, transparent 0.6cqw) 0 0 / 5cqw 5cqw;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 55%);
+  mask-image: linear-gradient(180deg, #000 0%, transparent 55%);
+}
+
+/* Hairline edge, brighter along the top */
+.tile::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+/* Aurora: the period's stream colours and a deep indigo, drifting slowly (each card out of step) */
+.aurora {
+  position: absolute;
+  inset: -30%;
+  z-index: 0;
+  background:
+    radial-gradient(34% 26% at 66% 28%, color-mix(in srgb, var(--c) 70%, transparent), transparent 70%),
+    radial-gradient(40% 30% at 30% 18%, rgba(88, 64, 214, 0.5), transparent 72%),
+    radial-gradient(30% 24% at 78% 62%, color-mix(in srgb, var(--c2) 45%, transparent), transparent 70%),
+    radial-gradient(34% 22% at 28% 72%, color-mix(in srgb, var(--c3) 35%, transparent), transparent 72%);
+  translate: calc(var(--px) * -8cqw) calc(var(--py) * -8cqw);
+  transition: translate 0.5s var(--ease);
+  animation: drift 16s ease-in-out calc(var(--z) * -2.7s) infinite alternate;
+}
+
+/* Soft light under the pointer */
+.glare {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at calc(50% + var(--px) * 100%) calc(50% + var(--py) * 100%),
+    rgba(255, 255, 255, 0.14),
+    rgba(255, 255, 255, 0) 45%
+  );
+}
+
+/* Klo, at the top of the twin side */
+.klo {
+  position: absolute;
+  z-index: 3;
+  top: 6cqw;
+  left: 7cqw;
+  width: 24cqw;
+}
+.klo::before {
+  content: "";
+  position: absolute;
+  inset: -16% -20% -8%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--c) 34%, transparent), transparent);
+}
+.klo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  transform-origin: 50% 90%;
+  filter: drop-shadow(0 1.6cqw 2.4cqw rgba(0, 0, 0, 0.45));
+}
+
+/* The period's dates as glass nudges */
+.nudges {
+  position: absolute;
+  z-index: 2;
+  top: 31cqw;
+  left: 7cqw;
+  right: 7cqw;
+  display: flex;
+  flex-direction: column;
+  gap: 2.4cqw;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.nudges li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 2.6cqw 3.4cqw 2.6cqw 8cqw;
+  border-radius: 4cqw;
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
+}
+.nudges li::before {
+  content: "";
+  position: absolute;
+  top: 4.2cqw;
+  left: 3.4cqw;
+  width: 2.6cqw;
+  height: 2.6cqw;
+  border-radius: 50%;
+  background: var(--dot);
+  box-shadow: 0 0 2cqw var(--dot);
+}
+.nudges b {
+  font-size: max(9px, 4.6cqw);
+  font-weight: 600;
+  line-height: 1.3;
+  color: rgba(250, 248, 246, 0.92);
+}
+.nudges small {
+  margin-top: 0.4cqw;
+  font-size: max(8px, 3.8cqw);
+  color: rgba(250, 248, 246, 0.6);
+}
+
+/* A light that runs round the twin side's edge */
+.back::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  padding: 1.5px;
+  border-radius: 6cqw;
+  background: conic-gradient(
+    from var(--edge),
+    transparent 0deg 220deg,
+    color-mix(in srgb, var(--c) 70%, #fff) 290deg,
+    #fff 320deg,
+    transparent 340deg 360deg
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  animation: edge 2.8s linear infinite paused;
+}
+
+/* Amber bar across the bottom, overhanging the card's edges */
+.bar {
+  position: absolute;
+  z-index: 6;
+  left: -3%;
+  right: -3%;
+  bottom: 9cqw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2.4cqw;
+  height: 14cqw;
+  border-radius: 3.8cqw;
+  background: var(--accent);
+  color: var(--ink);
+  font-size: 6cqw;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  rotate: var(--br);
+  box-shadow: 0 3cqw 8cqw -3cqw rgba(245, 179, 31, 0.5);
+}
+.barEmo {
+  font-size: 6.4cqw;
+  line-height: 1;
+}
+.bar svg {
+  flex: none;
+  width: 6cqw;
+  height: 6cqw;
+}
+.arrow {
+  transition: translate 0.3s var(--ease);
+}
+
+/* While turned: the edge light runs, Klo pops up and waves, the arrow nudges */
+@media (hover: hover) {
+  .card[data-in]:hover .back::after {
+    animation-play-state: running;
+  }
+  .card[data-in]:hover .klo img {
+    animation: popWave 1.3s var(--ease) 0.3s both;
+  }
+  .card[data-in]:hover .arrow {
+    translate: 1.8cqw 0;
+  }
+}
+.card[data-in] .face:focus-visible .klo img,
+.card[data-open] .klo img {
+  animation: popWave 1.3s var(--ease) 0.3s both;
+}
+
+/* ---------- Keyframes ---------- */
+@keyframes drift {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate(-6%, 4%) rotate(14deg);
+  }
+  100% {
+    transform: translate(5%, -3%) rotate(-10deg);
+  }
+}
+@keyframes edge {
+  to {
+    --edge: 360deg;
+  }
+}
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-1.6cqw) scale(1.05);
+  }
+  55% {
+    transform: translateY(0) scale(1.08, 0.94);
+  }
+  70% {
+    transform: translateY(0);
+  }
+}
+@keyframes popWave {
+  0% {
+    scale: 0.4;
+    translate: 0 30%;
+    rotate: 0deg;
+    opacity: 0;
+  }
+  35% {
+    scale: 1.06;
+    translate: 0 0;
+    opacity: 1;
+  }
+  50% {
+    scale: 1;
+    rotate: -9deg;
+  }
+  65% {
+    rotate: 8deg;
+  }
+  80% {
+    rotate: -5deg;
+  }
+  100% {
+    scale: 1;
+    translate: 0 0;
+    rotate: 0deg;
+    opacity: 1;
+  }
+}
+
+/* ---------- Mobile: the cards land in a pile in the middle ---------- */
+@media (max-width: 767px) {
+  .section {
+    --cw: min(66vw, 31svh, 290px);
+    --mid: 40svh;
+    height: 320svh;
+  }
+  .card {
+    --x: var(--mx);
+    --y: var(--my);
+    --r: var(--mr);
+    --spin: var(--ms);
+    z-index: var(--mz);
+  }
+}
+
+/* Tapping the turned top card slides it out and tucks it under the pile */
+.card[data-sending] .face {
+  animation: toBack 0.7s var(--ease);
+}
+@keyframes toBack {
+  0% {
+    transform: none;
+  }
+  45% {
+    transform: translate(-108%, -4%) rotate(-12deg);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+/* ---------- Pausing ---------- */
+.section[data-paused] .aurora,
+.section[data-paused] .emo > span {
+  animation-play-state: paused;
+}
+
+/* ---------- Reduced motion: no pinning, the final layout; cards still turn, without motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .section {
+    --enter: 1 !important;
+    --cover: 1 !important;
+    height: auto;
+  }
+  .sticky {
+    position: relative;
+    height: max(100svh, 640px);
+  }
+  .card {
+    --e: 1 !important;
+    transition: none;
+  }
+  .face,
+  .aurora,
+  .arrow {
+    transition: none;
+  }
+  .aurora,
+  .emo > span,
+  .back::after,
+  .card .klo img,
+  .card[data-sending] .face {
+    animation: none !important;
+  }
+}
