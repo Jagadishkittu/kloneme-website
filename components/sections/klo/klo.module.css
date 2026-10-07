@@ -1,0 +1,741 @@
+/* ============================================================
+   Meet Klo — Bento Dialogue (Option A)
+   Light take on the reference: a tall card with a phone running off its bottom edge (Klo chat),
+   and two stacked cards on the right: Klo's rules as tiles, and a short nudge ending in "Thinking…".
+   Sizes inside the phone are in cqw (1cqw = 1% of the phone screen's width), like the hero phone.
+   ============================================================ */
+
+/* ---------- Section + transition in from the Twin section ---------- */
+.section {
+  --sheet-r: clamp(40px, 6vw, 88px);
+  position: relative;
+  isolation: isolate;
+  view-timeline: --klo block;
+}
+
+/* Dark strip behind the sheet's top corners, continuing the Twin section */
+.backing {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: -2;
+  height: var(--sheet-r);
+  background: var(--ink);
+}
+
+.sheet {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--bg);
+}
+
+.bento {
+  --r: clamp(28px, 3vw, 40px);
+  --pad: clamp(20px, 2.6vw, 34px);
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1fr);
+  grid-template-rows: 1fr 1fr;
+  gap: clamp(16px, 2vw, 24px);
+  width: 100%;
+  max-width: 1080px;
+  margin: clamp(36px, 6vh, 64px) auto 0;
+}
+
+.card {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--r);
+  background: var(--paper);
+  box-shadow:
+    0 0 0 1px var(--line),
+    0 40px 70px -50px rgba(23, 20, 29, 0.28);
+}
+
+/* ---------- Phone card ---------- */
+.phoneCard {
+  grid-row: 1 / span 2;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-top: clamp(36px, 4.5vw, 56px);
+  background:
+    radial-gradient(90% 55% at 50% 0%, #fff4dc 0%, rgba(255, 244, 220, 0) 72%),
+    var(--paper);
+}
+
+/* Shows the top ~64% of the phone; the card's bottom edge cuts the rest */
+.crop {
+  position: relative;
+  flex: none;
+  width: min(80%, 400px);
+  aspect-ratio: 9 / 12.5;
+}
+
+.phoneAt {
+  position: absolute;
+  inset: 0 0 auto;
+}
+
+.top {
+  position: absolute;
+  z-index: 4;
+  top: 15cqw;
+  left: 5cqw;
+  right: 5cqw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.round {
+  display: grid;
+  place-items: center;
+  width: 11.5cqw;
+  height: 11.5cqw;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgba(23, 20, 29, 0.06),
+    0 0.6cqw 2.4cqw rgba(23, 20, 29, 0.08);
+}
+.round svg {
+  width: 5.2cqw;
+  height: 5.2cqw;
+}
+
+.face {
+  overflow: hidden;
+  background: #fff7e6;
+}
+.face img {
+  width: 9.4cqw;
+  height: auto;
+  margin-top: 1.4cqw;
+}
+
+.title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.7cqw 6cqw 1.9cqw;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgba(23, 20, 29, 0.06),
+    0 0.6cqw 2.4cqw rgba(23, 20, 29, 0.08);
+}
+.title b {
+  font-size: 4.2cqw;
+  font-weight: 600;
+  line-height: 1.2;
+}
+.title small {
+  display: flex;
+  align-items: center;
+  gap: 1cqw;
+  font-size: 2.9cqw;
+  line-height: 1.3;
+  color: var(--muted);
+}
+.title small svg {
+  width: 3.2cqw;
+  height: 3.2cqw;
+  color: var(--lagoon);
+}
+
+/* Chat */
+.chat {
+  position: absolute;
+  top: 34cqw;
+  left: 5.5cqw;
+  right: 5.5cqw;
+  display: flex;
+  flex-direction: column;
+  gap: 4.5cqw;
+}
+
+.q {
+  align-self: flex-end;
+  max-width: 82%;
+  padding: 3cqw 4.4cqw;
+  border-radius: 5.5cqw 5.5cqw 1.6cqw 5.5cqw;
+  background: var(--ink);
+  color: #fff;
+  font-size: 4cqw;
+  font-weight: 500;
+  line-height: 1.35;
+  animation: msgIn 0.45s var(--ease) 0.25s both;
+}
+
+/* Klo thinking and the answer share one spot; the answer takes over when the thinking fades */
+.reply {
+  display: grid;
+}
+.reply > * {
+  grid-area: 1 / 1;
+}
+
+/* Klo's thinking face + "Thinking…" for ~2s before each answer */
+.pThink {
+  justify-self: start;
+  align-self: start;
+  display: flex;
+  align-items: center;
+  gap: 2.4cqw;
+  font-size: 4cqw;
+  opacity: 0;
+  animation: thinkIn 2.2s ease 0.8s both;
+}
+
+.pFace {
+  flex: none;
+  width: 8.6cqw;
+  animation: bob 1.4s ease-in-out infinite;
+}
+.pFace img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.a {
+  font-size: 4.3cqw;
+  line-height: 1.42;
+  animation: msgIn 0.5s var(--ease) 3s both;
+}
+
+.src {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.4cqw;
+  margin-top: 2.6cqw;
+  padding: 1.2cqw 2.8cqw 1.2cqw 2.2cqw;
+  border-radius: 999px;
+  background: rgba(245, 179, 31, 0.2);
+  font-size: 3.2cqw;
+  font-weight: 600;
+  line-height: 1.3;
+  animation: msgIn 0.4s var(--ease) 3.5s both;
+}
+.src svg {
+  width: 3.4cqw;
+  height: 3.4cqw;
+}
+
+/* Question pager ("Try asking") */
+.pager {
+  position: absolute;
+  z-index: 3;
+  top: 106cqw;
+  left: 4cqw;
+  right: 4cqw;
+  padding: 2.6cqw 4.4cqw 4.4cqw 2.6cqw;
+  border-radius: 6cqw;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgba(23, 20, 29, 0.07),
+    0 2cqw 6cqw -2cqw rgba(23, 20, 29, 0.14);
+}
+
+.pagerTop {
+  display: flex;
+  align-items: center;
+  gap: 0.6cqw;
+  font-size: 3.5cqw;
+  color: var(--muted);
+}
+
+.pagerTop button {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 8cqw;
+  height: 8cqw;
+  border-radius: 50%;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+/* Bigger tap area than the drawn button */
+.pagerTop button::before {
+  content: "";
+  position: absolute;
+  inset: -2cqw;
+}
+.pagerTop button:hover {
+  background: rgba(23, 20, 29, 0.06);
+}
+.pagerTop button svg {
+  width: 4.4cqw;
+  height: 4.4cqw;
+}
+
+.flip {
+  transform: scaleX(-1);
+}
+
+.try {
+  margin-left: auto;
+  font-size: 2.8cqw;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.pagerQ {
+  margin-top: 1.4cqw;
+  padding-left: 1.8cqw;
+  font-size: 4.1cqw;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+/* ---------- Rules card ---------- */
+.rulesCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--pad) 0;
+  background: linear-gradient(180deg, var(--paper) 0%, var(--paper) 50%, #f6f2ed 100%);
+}
+
+/* Tiles run off the right edge like the reference; the strip scrolls to keep the lit one in view */
+/* The strip scrolls sideways, which clips anything outside it, so its padding leaves room for the
+   lit tile's shadow; the negative margins keep the card's layout unchanged */
+.strip {
+  position: relative;
+  display: flex;
+  gap: 12px;
+  margin: -14px 0 -28px;
+  padding: 22px var(--pad) 42px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--pad);
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 calc(var(--pad) * 0.6), #000 calc(100% - 72px), transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 calc(var(--pad) * 0.6), #000 calc(100% - 72px), transparent 100%);
+}
+.strip::-webkit-scrollbar {
+  display: none;
+}
+/* Room after the last tile so it can clear the right fade */
+.strip::after {
+  content: "";
+  flex: 0 0 60px;
+}
+
+.tile {
+  position: relative;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: clamp(200px, 22vw, 248px);
+  padding: 16px 18px 18px;
+  overflow: hidden;
+  border-radius: 22px;
+  scroll-snap-align: start;
+  text-align: left;
+  background: #f4f1ed;
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    background-color 0.5s ease,
+    box-shadow 0.5s ease,
+    transform 0.3s var(--ease);
+}
+.tile:hover {
+  transform: translateY(-2px);
+}
+
+/* Lit tile: amber, with a faint sparkle like the reference's active tile */
+.tile::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(rgba(255, 255, 255, 0.55) 0.8px, transparent 1.4px) 0 0 / 11px 11px,
+    radial-gradient(110% 90% at 85% 10%, #ffd873 0%, rgba(255, 216, 115, 0) 60%),
+    linear-gradient(135deg, #f8c23c 0%, var(--accent) 55%, #eba40f 100%);
+  transition: opacity 0.5s ease;
+}
+.tile[data-on] {
+  box-shadow:
+    0 18px 36px -20px rgba(197, 134, 0, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+.tile[data-on]::before {
+  opacity: 1;
+}
+.tile > * {
+  position: relative;
+}
+
+.tileHead {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.tileHead b {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.tileIcon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: #fff;
+  transition: background-color 0.5s ease;
+}
+.tileIcon svg {
+  width: 16px;
+  height: 16px;
+}
+.tile[data-on] .tileIcon {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.track {
+  height: 4px;
+  overflow: hidden;
+  border-radius: 4px;
+  background: rgba(23, 20, 29, 0.1);
+}
+.tile[data-on] .track {
+  background: rgba(23, 20, 29, 0.14);
+}
+
+.fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--ink);
+  transform-origin: 0 50%;
+  animation: fillBar var(--step) linear both;
+}
+
+.tileBody {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--muted);
+  transition: color 0.5s ease;
+}
+.tile[data-on] .tileBody {
+  color: rgba(23, 20, 29, 0.72);
+}
+
+/* ---------- Nudge card ---------- */
+.nudgeCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--pad) calc(var(--pad) * 1.2);
+  background: linear-gradient(180deg, var(--paper) 0%, var(--paper) 55%, #f6f2ed 100%);
+}
+
+/* One play of the card; it fades out just before it starts again */
+.nudge {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: cycle var(--loop) linear both;
+}
+
+.tKlo {
+  max-width: 88%;
+  font-size: clamp(15px, 1.25vw, 16px);
+  line-height: 1.45;
+  animation: rise 0.5s var(--ease) 0.3s both;
+}
+
+.tYou {
+  align-self: flex-end;
+  padding: 9px 17px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 14.5px;
+  font-weight: 500;
+  animation: rise 0.5s var(--ease) 1.1s both;
+}
+
+.tAnswer {
+  font-size: clamp(15px, 1.25vw, 16px);
+  line-height: 1.5;
+}
+
+/* The answer streams in a word at a time, each sharpening out of a blur,
+   with an amber caret hopping along the newest word */
+.w {
+  position: relative;
+  display: inline-block;
+  animation: wordIn 0.45s var(--ease) var(--d) both;
+}
+.w::after {
+  content: "";
+  position: absolute;
+  top: 0.2em;
+  right: -4px;
+  width: 2px;
+  height: 1.1em;
+  border-radius: 1px;
+  background: var(--accent);
+  opacity: 0;
+  animation: caretHop 0.1s linear var(--d) forwards;
+}
+.w[data-last]::after {
+  animation: caretLast 1.4s linear var(--d) forwards;
+}
+
+/* The source: a mini family calendar that draws in, with the dates Klo mentioned lit */
+.cal {
+  animation: rise 0.5s var(--ease) var(--cal-at) both;
+}
+
+.calSrc {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+.calSrc svg {
+  width: 14px;
+  height: 14px;
+}
+
+.calLine {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 10px 0 0;
+  padding: 16px 0 0;
+  list-style: none;
+}
+/* Track from the first dot to the last */
+.calLine::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 5px;
+  right: calc(100% / 3 - 10px);
+  height: 2px;
+  border-radius: 2px;
+  background: rgba(23, 20, 29, 0.12);
+  transform-origin: 0 50%;
+  animation: draw 0.8s var(--ease) var(--cal-at) both;
+}
+
+.calLine li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  animation: rise 0.4s var(--ease) calc(var(--cal-at) + 0.25s + var(--i) * 0.15s) both;
+}
+.calLine li::before,
+.calLine li[data-mark]::after {
+  content: "";
+  position: absolute;
+  top: -16px;
+  left: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.calLine li::before {
+  background: var(--paper);
+  box-shadow: inset 0 0 0 2px rgba(23, 20, 29, 0.28);
+}
+.calLine li[data-mark]::before {
+  background: var(--accent);
+  box-shadow: none;
+}
+.calLine li[data-mark]::after {
+  box-sizing: border-box;
+  border: 2px solid var(--accent);
+  opacity: 0;
+  animation: ping 1.8s cubic-bezier(0, 0, 0.2, 1) calc(var(--cal-at) + 0.7s) infinite;
+}
+
+.calLine b {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.calLine small {
+  font-size: 12px;
+  line-height: 1.3;
+  color: var(--muted);
+}
+
+.shimmer {
+  background: linear-gradient(90deg, var(--muted) 0%, var(--muted) 38%, var(--ink) 50%, var(--muted) 62%, var(--muted) 100%) 100% 0 / 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 2.2s linear infinite;
+}
+
+/* ---------- Keyframes ---------- */
+@keyframes msgIn {
+  from { opacity: 0; transform: translateY(3cqw); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes thinkIn {
+  0% { opacity: 0; transform: translateY(2cqw); }
+  15%,
+  85% { opacity: 1; transform: none; }
+  100% { opacity: 0; transform: none; }
+}
+
+@keyframes cycle {
+  0%,
+  94% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes wordIn {
+  from { opacity: 0; filter: blur(6px); transform: translateY(4px); }
+  to { opacity: 1; filter: none; transform: none; }
+}
+
+@keyframes caretHop {
+  0%,
+  99% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes caretLast {
+  0%,
+  24%,
+  50%,
+  74% { opacity: 1; }
+  25%,
+  49%,
+  75%,
+  100% { opacity: 0; }
+}
+
+@keyframes draw {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes ping {
+  from { transform: scale(1); opacity: 0.8; }
+  to { transform: scale(2.6); opacity: 0; }
+}
+
+@keyframes fillBar {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes bob {
+  0%,
+  100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes shimmer {
+  to { background-position: -150% 0; }
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 860px) {
+  .bento {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+    max-width: 560px;
+  }
+  .phoneCard {
+    grid-row: auto;
+  }
+  .crop {
+    width: min(82%, 340px);
+  }
+  .rulesCard {
+    padding: 26px 0;
+  }
+  .tile {
+    width: min(240px, 72vw);
+  }
+  .nudgeCard {
+    padding: 32px 24px;
+  }
+}
+
+/* ---------- Scroll transitions ---------- */
+/* The sheet's corners flatten, then the headline and the three cards rise in one after another */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .sheet {
+      border-radius: var(--sheet-r) var(--sheet-r) 0 0;
+      animation: flatten linear both;
+      animation-timeline: --klo;
+      animation-range: entry 0% entry 75%;
+    }
+    .reveal,
+    .bento > .card {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 5% entry 60%;
+    }
+    .bento > .card:nth-child(2) {
+      animation-range: entry 12% entry 67%;
+    }
+    .bento > .card:nth-child(3) {
+      animation-range: entry 19% entry 74%;
+    }
+  }
+}
+
+@keyframes flatten {
+  to { border-radius: 0 0 0 0; }
+}
+
+@keyframes reveal {
+  from { opacity: 0; translate: 0 64px; scale: 0.96; }
+  to { opacity: 1; translate: 0 0; scale: 1; }
+}
+
+/* ---------- Pausing ---------- */
+/* Off-screen: nothing inside the cards plays (the chat waits to start until it's seen) */
+.bento[data-paused] .card *,
+.bento[data-paused] .card *::before,
+.bento[data-paused] .card *::after {
+  animation-play-state: paused !important;
+}
+
+/* Pointer or keyboard focus on the phone or the rules: hold the current exchange */
+.bento[data-hold] .fill {
+  animation-play-state: paused;
+}
+
+/* Reduced motion: final states, no auto-advance (the arrows and tiles still switch questions) */
+@media (prefers-reduced-motion: reduce) {
+  .bento *,
+  .bento *::before,
+  .bento *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

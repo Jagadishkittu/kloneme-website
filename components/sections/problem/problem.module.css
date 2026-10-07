@@ -1,0 +1,431 @@
+/* ============================================================
+   Problem — Orbit Inbox (Option A, revision 1)
+   A near-full-screen pale sky-to-lagoon panel with soft concentric arcs around a phone. v9's ten
+   scattered places travel along two of the arcs as tilted tiles, turning like one slow wheel.
+   The phone holds the loose ends, filed by stream. Copy on the right.
+   Panel geometry uses --u: 1% of the panel's width, or less when the screen is short, so the
+   whole picture always fits the panel's height. Inside the phone, cqw is the phone screen.
+   ============================================================ */
+
+.wrap {
+  container-type: inline-size;
+}
+
+.panel {
+  --u: min(1cqw, 1.825cqh);
+  /* Final shape: padded in from the screen edges with rounded corners (see the scroll transition below) */
+  --inset: clamp(12px, 1.6vw, 26px);
+  --radius: clamp(28px, 3vw, 44px);
+  container-type: size;
+  position: relative;
+  /* Full width of the screen, as tall as the window (31:17 at most) */
+  height: max(520px, min(calc(100cqw * 17 / 31), 100svh));
+  overflow: clip;
+  clip-path: inset(var(--inset) round var(--radius));
+  background: linear-gradient(180deg, #eceefa 0%, #e5eef7 45%, #d3ecee 100%);
+}
+
+/* Transition in: edge to edge as it arrives, settling into the padded, rounded panel by the time
+   it is centred on screen; reverses when scrolling back up */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .panel {
+      animation: settle linear both;
+      animation-timeline: view();
+      animation-range: entry 15% entry 100%;
+    }
+  }
+}
+
+@keyframes settle {
+  from { clip-path: inset(0px round 0px); }
+  to { clip-path: inset(var(--inset) round var(--radius)); }
+}
+
+/* Copy sits centred in the space right of the arcs */
+.copy {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: calc(var(--u) * 62);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px clamp(24px, 4cqw, 64px) 32px clamp(16px, 2cqw, 32px);
+}
+
+/* A light veil of the panel's own colours behind the copy: the arcs still show through, dimmed,
+   so the text reads clearly */
+.copy::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 -6%;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(180deg, #eceefa 0%, #e5eef7 45%, #d3ecee 100%);
+  opacity: 0.62;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 34%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 34%);
+}
+
+/* ---------- Stage: arcs, phone, tiles ---------- */
+.stage {
+  /* Orbit centre = middle of the phone; tiles ride --r1 and --r2 */
+  --cx: calc(var(--u) * 18);
+  --cy: 50%;
+  --r0: calc(var(--u) * 15);
+  --r1: calc(var(--u) * 27);
+  --r2: calc(var(--u) * 38.5);
+  --r3: calc(var(--u) * 50);
+  --r4: calc(var(--u) * 62);
+  --r5: calc(var(--u) * 76);
+  --tile: calc(var(--u) * 7);
+  --base: 0deg;
+  position: absolute;
+  inset: 0;
+}
+
+.orbit {
+  position: absolute;
+  left: var(--cx);
+  top: var(--cy);
+  z-index: 2;
+  width: 0;
+  height: 0;
+}
+.orbit:first-child {
+  z-index: 0;
+}
+
+.arc {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: calc(var(--R) * 2);
+  height: calc(var(--R) * 2);
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 255, 255, 0) calc(100% - 38px),
+    rgba(255, 255, 255, 0.26) calc(100% - 8px),
+    rgba(255, 255, 255, 0.8) calc(100% - 1.5px),
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+.tiles {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Each tile rides its arc from --from to --to (turning with the curve), then starts again.
+   The angle is measured from the phone's side: right of it on desktop, above it on mobile. */
+.slot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: rotate(calc(var(--base) + var(--still))) translateX(var(--R)) rotate(calc(-0.5 * var(--still) - var(--base)));
+  animation: ride var(--dur) linear var(--delay) infinite;
+}
+
+@keyframes ride {
+  0% {
+    transform: rotate(calc(var(--base) + var(--from))) translateX(var(--R)) rotate(calc(-0.5 * var(--from) - var(--base)));
+    opacity: 0;
+  }
+  8%,
+  92% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(calc(var(--base) + var(--to))) translateX(var(--R)) rotate(calc(-0.5 * var(--to) - var(--base)));
+    opacity: 0;
+  }
+}
+
+/* Hovering a tile holds the wheel so its label can be read */
+.tiles:hover .slot {
+  animation-play-state: paused;
+}
+
+.tile {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: grid;
+  place-items: center;
+  width: var(--tile);
+  height: var(--tile);
+  translate: -50% -50%;
+  rotate: var(--tilt);
+  border-radius: 26%;
+  background: #fff;
+  color: var(--c);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.9),
+    0 16px 32px -16px rgba(38, 58, 92, 0.38);
+  transition: scale 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.tile > svg {
+  width: 42%;
+  height: 42%;
+}
+.tile:hover {
+  scale: 1.08;
+}
+
+/* Place and problem, on hover */
+.tip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  translate: -50% 0;
+  rotate: calc(-1 * var(--tilt));
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.3;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.tip em {
+  font-style: normal;
+  color: #ffb3a8;
+}
+.tile:hover .tip {
+  opacity: 1;
+}
+
+/* ---------- Phone ---------- */
+.phoneAt {
+  position: absolute;
+  z-index: 1;
+  left: calc(var(--u) * 5);
+  top: calc(50% - var(--u) * 14.4);
+  width: calc(var(--u) * 26);
+}
+
+/* Soft lilac and amber light at the top of the screen */
+.glow {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 72cqw;
+  background:
+    radial-gradient(70% 60% at 25% 12%, #e2dcff 0%, rgba(226, 220, 255, 0) 70%),
+    radial-gradient(60% 55% at 88% 4%, #ffe8bd 0%, rgba(255, 232, 189, 0) 70%);
+}
+
+.bar {
+  position: absolute;
+  z-index: 2;
+  top: 16cqw;
+  left: 5cqw;
+  right: 5cqw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.round,
+.pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 12cqw;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgba(23, 20, 29, 0.05),
+    0 0.6cqw 2.4cqw rgba(23, 20, 29, 0.08);
+}
+.round {
+  width: 12cqw;
+}
+.pill {
+  gap: 5cqw;
+  padding: 0 4.6cqw;
+}
+.round svg,
+.pill svg {
+  width: 5.4cqw;
+  height: 5.4cqw;
+}
+
+.title {
+  position: absolute;
+  top: 33cqw;
+  left: 6cqw;
+  font-size: 7.4cqw;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.filters {
+  position: absolute;
+  top: 46cqw;
+  left: 5cqw;
+  right: 0;
+  display: flex;
+  gap: 2cqw;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.filters span {
+  flex: none;
+  display: grid;
+  place-items: center;
+  height: 9.4cqw;
+  padding: 0 4cqw;
+  border-radius: 999px;
+  background: rgba(23, 20, 29, 0.06);
+  font-size: 3.8cqw;
+  font-weight: 500;
+  color: var(--muted);
+}
+.filters span:first-child {
+  background: var(--ink);
+  color: #fff;
+}
+
+.list {
+  position: absolute;
+  top: 60cqw;
+  left: 0;
+  right: 0;
+  padding: 0 5cqw;
+}
+
+.rowBody {
+  display: flex;
+  align-items: center;
+  gap: 3.6cqw;
+  padding: 3.2cqw 0;
+  border-bottom: 1px solid rgba(23, 20, 29, 0.07);
+}
+
+.thumb {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 14cqw;
+  height: 16cqw;
+  border-radius: 2.6cqw;
+  background: #fff;
+  color: var(--c);
+  box-shadow: 0 0 0 1px rgba(23, 20, 29, 0.08);
+}
+.thumb svg {
+  width: 6.4cqw;
+  height: 6.4cqw;
+}
+
+.rowText {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.tag {
+  padding: 0.7cqw 2.4cqw;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--c) 14%, transparent);
+  color: var(--c);
+  font-size: 2.9cqw;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.rowTitle {
+  max-width: 100%;
+  margin-top: 1.2cqw;
+  overflow: hidden;
+  font-size: 4.1cqw;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.rowSub {
+  margin-top: 0.4cqw;
+  font-size: 3.3cqw;
+  line-height: 1.3;
+  color: var(--muted);
+}
+
+.chev {
+  flex: none;
+  width: 4.4cqw;
+  height: 4.4cqw;
+  color: rgba(23, 20, 29, 0.35);
+}
+
+/* ---------- Mobile: copy on top, arcs fan out above a smaller phone ---------- */
+@media (max-width: 899px) {
+  .panel {
+    --u: 1cqw;
+    container-type: inline-size;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+  }
+  .copy {
+    position: relative;
+    inset: auto;
+    display: block;
+    padding: 36px 22px 4px;
+  }
+  .copy::before {
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 45%, rgba(236, 238, 250, 0.9) 45%, rgba(236, 238, 250, 0) 78%);
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .stage {
+    --cx: 50cqw;
+    --cy: 80cqw;
+    --r0: 30cqw;
+    --r1: 50cqw;
+    --r2: 72cqw;
+    --r3: 94cqw;
+    --r4: 116cqw;
+    --r5: 138cqw;
+    --tile: 13cqw;
+    --base: -90deg;
+    position: relative;
+    inset: auto;
+    height: 127cqw;
+  }
+  .phoneAt {
+    left: 19cqw;
+    top: 52cqw;
+    width: 62cqw;
+  }
+}
+
+/* ---------- Pausing ---------- */
+.panel[data-paused] .slot {
+  animation-play-state: paused;
+}
+
+/* Reduced motion: tiles rest, evenly spaced along their arcs */
+@media (prefers-reduced-motion: reduce) {
+  .slot {
+    animation: none;
+  }
+  .tile,
+  .tip {
+    transition: none;
+  }
+}

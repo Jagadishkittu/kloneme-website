@@ -1,0 +1,736 @@
+/* ============================================================
+   Streams — A + B + C combined
+   The section pins while scrolling moves a row of cards right → left (StreamsRail.tsx), then the
+   page carries on. The row opens with a title card (C). Each stream card has an art panel in its
+   pastel tint with an animated pattern (C), a live mini app screen (B), Klo with that stream's
+   expression and a "From <place>" chip (A); then icon, name and description. The centred card is
+   lit and plays its screen; a dot per stream + an amber bar track progress.
+   Inside the art panel, cqw/cqh are the panel's width/height.
+   ============================================================ */
+
+.streams {
+  --cw: clamp(300px, 31vw, 500px);
+  --gap: clamp(18px, 2.2vw, 32px);
+  --side: clamp(20px, 7vw, 120px);
+  /* Art height: by card width, but always leaving room for the header, text and progress */
+  --ah: max(230px, min(calc(var(--cw) * 0.78), calc(100svh - 330px)));
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  position: relative;
+  background: var(--bg);
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100svh;
+  padding: 84px 0 64px; /* clear the fixed header; progress sits below */
+  overflow: hidden;
+}
+
+.track {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--gap);
+  width: max-content;
+  padding: 0 var(--side);
+  will-change: transform;
+}
+
+/* ---------- Title card ---------- */
+.intro {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  justify-content: center;
+  width: clamp(280px, 28vw, 440px);
+  min-height: var(--ah);
+  padding-right: 2vw;
+}
+
+.kicker {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.h2 {
+  margin-top: 12px;
+  font-size: clamp(32px, 3.8vw, 58px);
+  font-weight: 600;
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+.h2 span {
+  display: block;
+}
+.h2Accent {
+  color: var(--muted);
+}
+
+.sub {
+  max-width: 380px;
+  margin-top: 16px;
+  font-size: clamp(15px, 1.15vw, 17px);
+  font-weight: 500;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.hint {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin-top: 28px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--bg);
+  animation: nudge 1.8s ease-in-out infinite;
+}
+.hint svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ---------- Stream card ---------- */
+.card {
+  flex: none;
+  width: var(--cw);
+  opacity: 0.5;
+  scale: 0.96;
+  transform-origin: 50% 40%;
+  transition:
+    opacity 0.6s ease,
+    scale 0.6s var(--ease);
+}
+.card[data-active] {
+  opacity: 1;
+  scale: 1;
+}
+
+.art {
+  container-type: size;
+  position: relative;
+  height: var(--ah);
+  overflow: hidden;
+  border-radius: clamp(22px, 2.4vw, 32px);
+  background:
+    radial-gradient(120% 90% at 85% 10%, color-mix(in srgb, var(--c) 16%, #fff) 0%, rgba(255, 255, 255, 0) 60%),
+    color-mix(in srgb, var(--c) 9%, #f6f3ef);
+  box-shadow: inset 0 0 0 1px rgba(23, 20, 29, 0.05);
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  font-size: clamp(17px, 1.4vw, 20px);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.title svg {
+  width: 20px;
+  height: 20px;
+  color: var(--c);
+}
+
+.body {
+  max-width: 44ch;
+  margin-top: 6px;
+  font-size: clamp(14px, 1.05vw, 16px);
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+/* ---------- Pattern (behind the screen) ---------- */
+.pattern {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: var(--c);
+  opacity: 0.42;
+}
+
+.flight {
+  animation: march 1.2s linear infinite;
+}
+.beat {
+  stroke-dasharray: 1 1;
+  animation: beat 3.2s ease-in-out infinite;
+}
+.col {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: grow 2.4s ease-in-out infinite alternate;
+}
+.dot {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+.stroke {
+  stroke-dasharray: 1 1;
+  animation: paint 3.6s var(--ease) infinite;
+}
+.ring,
+.ringRev {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: spin 18s linear infinite;
+}
+.ringRev {
+  animation-duration: 13s;
+  animation-direction: reverse;
+}
+
+/* ---------- Mini app screen ---------- */
+.screen {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 6cqw;
+  display: flex;
+  flex-direction: column;
+  gap: 2.6cqw;
+  width: 60cqw;
+  max-height: 88cqh;
+  padding: 4.4cqw;
+  overflow: hidden;
+  translate: 0 -50%;
+  border-radius: 5cqw;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgba(23, 20, 29, 0.05),
+    0 24px 44px -26px rgba(23, 20, 29, 0.35);
+  font-size: clamp(11px, 2.9cqw, 14px);
+  color: var(--ink);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 2.6cqw;
+}
+
+.rowIcon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 8.6cqw;
+  height: 8.6cqw;
+  border-radius: 2.6cqw;
+  background: color-mix(in srgb, var(--c) 14%, #fff);
+  color: var(--c);
+}
+.rowIcon svg {
+  width: 4.6cqw;
+  height: 4.6cqw;
+}
+
+.rowText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.rowText b {
+  overflow: hidden;
+  font-weight: 600;
+  line-height: 1.25;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.rowText small {
+  font-size: 0.86em;
+  line-height: 1.3;
+  color: var(--muted);
+}
+.rowText small:empty {
+  display: none;
+}
+
+/* Travel: route line */
+.route {
+  display: flex;
+  align-items: center;
+  gap: 1.4cqw;
+  padding: 0 1cqw;
+}
+.routeDot {
+  flex: none;
+  width: 2.4cqw;
+  height: 2.4cqw;
+  border-radius: 50%;
+  background: var(--c);
+}
+.routeTrack {
+  flex: 1;
+  height: 1cqw;
+  overflow: hidden;
+  border-radius: 1cqw;
+  background: rgba(23, 20, 29, 0.08);
+}
+.routeFill {
+  display: block;
+  width: 72%;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--c);
+  transform-origin: 0 50%;
+}
+
+/* Health / Hobbies: headline figure */
+.reading {
+  display: flex;
+  flex-direction: column;
+}
+.reading small {
+  font-size: 0.86em;
+  color: var(--muted);
+}
+.reading b {
+  font-size: 2.1em;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+.reading .readingSm {
+  font-size: 1.3em;
+}
+
+.spark {
+  width: 100%;
+  height: 11cqw;
+  overflow: visible;
+}
+.spark path {
+  fill: none;
+  stroke: var(--c);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Family: whose turn */
+.ask {
+  font-weight: 600;
+  line-height: 1.3;
+}
+.people {
+  position: relative;
+  display: flex;
+  gap: 3cqw;
+}
+.person {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8cqw;
+  width: 10cqw;
+}
+.person i {
+  display: grid;
+  place-items: center;
+  width: 10cqw;
+  height: 10cqw;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--c) 16%, #fff);
+  color: var(--c);
+  font-style: normal;
+  font-weight: 600;
+}
+.person small {
+  font-size: 0.8em;
+  color: var(--muted);
+}
+.turn {
+  position: absolute;
+  top: -0.8cqw;
+  left: -0.8cqw;
+  width: 11.6cqw;
+  height: 11.6cqw;
+  border: 0.6cqw solid var(--c);
+  border-radius: 50%;
+}
+
+/* Hobbies: paintings grid */
+.cells {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 0.9cqw;
+}
+.cells i {
+  aspect-ratio: 1;
+  border-radius: 0.9cqw;
+  background: rgba(23, 20, 29, 0.07);
+}
+.cells i[data-on] {
+  background: var(--c);
+}
+
+/* Vault: Face ID scan */
+.scan {
+  display: flex;
+  align-items: center;
+  gap: 3cqw;
+}
+.scanBox {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 14cqw;
+  height: 14cqw;
+  overflow: hidden;
+  border-radius: 3.6cqw;
+  background: color-mix(in srgb, var(--c) 12%, #fff);
+  color: var(--c);
+}
+.scanBox svg {
+  width: 8cqw;
+  height: 8cqw;
+}
+.scanLine {
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  right: 10%;
+  height: 0.6cqw;
+  border-radius: 1cqw;
+  background: var(--c);
+  box-shadow: 0 0 2cqw var(--c);
+  opacity: 0;
+}
+.scanOk {
+  display: grid;
+  place-items: center;
+  width: 7cqw;
+  height: 7cqw;
+  border-radius: 50%;
+  background: var(--c);
+  color: #fff;
+}
+.scanOk svg {
+  width: 4cqw;
+  height: 4cqw;
+}
+.lock {
+  display: flex;
+  align-items: center;
+  gap: 1.6cqw;
+  font-size: 0.86em;
+  color: var(--muted);
+}
+.lock svg {
+  width: 3.8cqw;
+  height: 3.8cqw;
+}
+
+/* ---------- "From <place>" chip and Klo ---------- */
+.from {
+  position: absolute;
+  z-index: 3;
+  top: 6cqh;
+  right: 5cqw;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px 6px 9px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 8px 20px -12px rgba(23, 20, 29, 0.3);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--ink);
+}
+.from svg {
+  width: 14px;
+  height: 14px;
+  color: var(--c);
+}
+
+.klo {
+  position: absolute;
+  z-index: 3;
+  right: 2cqw;
+  bottom: -7cqh;
+  width: 32cqw;
+  animation: bob 4s ease-in-out infinite;
+}
+.klo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  transform-origin: 50% 90%;
+}
+
+/* ---------- Centred card plays ---------- */
+.card[data-active] .screen > * {
+  animation: rowIn 0.5s var(--ease) calc(0.15s + var(--i, 0) * 0.18s) both;
+}
+.card[data-active] .routeFill {
+  animation: fillX 1.6s var(--ease) 0.6s both;
+}
+.card[data-active] .spark path {
+  stroke-dasharray: 1 1;
+  animation: drawLine 1.4s ease 0.5s both;
+}
+.card[data-active] .turn {
+  animation: turn 3.6s var(--ease) 0.8s infinite;
+}
+.card[data-active] .cells i[data-on] {
+  animation: pop 0.35s var(--ease) calc(0.5s + var(--k) * 40ms) both;
+}
+.card[data-active] .scanLine {
+  animation: scanY 1.4s ease-in-out 0.3s both;
+}
+.card[data-active] .scanOk {
+  animation: pop 0.4s cubic-bezier(0.3, 1.6, 0.5, 1) 1.6s both;
+}
+.card[data-active] .scan ~ .row {
+  animation-delay: calc(1.6s + var(--i) * 0.18s);
+}
+.card[data-active] .scan ~ .lock {
+  animation-delay: 2.3s;
+}
+.card[data-active] .from {
+  animation: chipIn 0.6s var(--ease) 0.5s both;
+}
+.card[data-active] .klo img {
+  animation: wave 1.8s var(--ease) 0.2s both;
+}
+
+/* ---------- Progress ---------- */
+.progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: clamp(16px, 4vh, 36px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.dots {
+  display: flex;
+  gap: 6px;
+}
+.dots i {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--c);
+  opacity: 0.3;
+  transition:
+    width 0.4s var(--ease),
+    opacity 0.4s ease;
+}
+.dots i[data-on] {
+  width: 22px;
+  opacity: 1;
+}
+.bar {
+  width: clamp(80px, 12vw, 160px);
+  height: 3px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: rgba(23, 20, 29, 0.1);
+}
+.bar span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transform: scaleX(var(--p, 0));
+  transform-origin: 0 50%;
+}
+.count {
+  min-width: 9.5em;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.count b {
+  font-weight: 500;
+  color: var(--muted);
+}
+
+/* ---------- Keyframes ---------- */
+@keyframes nudge {
+  0%,
+  100% { translate: 0 0; }
+  50% { translate: 8px 0; }
+}
+@keyframes march {
+  to { stroke-dashoffset: -15; }
+}
+@keyframes beat {
+  0% { stroke-dashoffset: 1; }
+  50% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: -1; }
+}
+@keyframes grow {
+  from { transform: scaleY(0.35); }
+  to { transform: scaleY(1); }
+}
+@keyframes pulse {
+  0%,
+  100% { transform: scale(0.6); opacity: 0.5; }
+  50% { transform: scale(1); opacity: 1; }
+}
+@keyframes paint {
+  0% { stroke-dashoffset: 1; }
+  45%,
+  80% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: -1; }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes rowIn {
+  from { opacity: 0; translate: 0 3cqw; }
+  to { opacity: 1; translate: 0 0; }
+}
+@keyframes fillX {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes drawLine {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes turn {
+  0%,
+  25% { translate: 0 0; }
+  33%,
+  58% { translate: 13cqw 0; }
+  66%,
+  92% { translate: 26cqw 0; }
+  100% { translate: 0 0; }
+}
+@keyframes pop {
+  from { scale: 0; opacity: 0; }
+  to { scale: 1; opacity: 1; }
+}
+@keyframes scanY {
+  0% { top: 15%; opacity: 1; }
+  45% { top: 85%; opacity: 1; }
+  90% { top: 15%; opacity: 1; }
+  100% { top: 15%; opacity: 0; }
+}
+@keyframes chipIn {
+  from { opacity: 0; translate: 28px 0; }
+  to { opacity: 1; translate: 0 0; }
+}
+@keyframes wave {
+  0% { translate: 0 40%; rotate: 0deg; }
+  30% { translate: 0 0; rotate: 0deg; }
+  45% { rotate: -8deg; }
+  60% { rotate: 7deg; }
+  75% { rotate: -5deg; }
+  100% { translate: 0 0; rotate: 0deg; }
+}
+@keyframes bob {
+  0%,
+  100% { translate: 0 0; }
+  50% { translate: 0 -2.5cqh; }
+}
+@keyframes railIn {
+  from { translate: 30vw 0; opacity: 0.3; }
+  to { translate: 0 0; opacity: 1; }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ---------- Transition in from the Problem section: the row slides in from the right ---------- */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .track {
+      animation: railIn linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 100%;
+    }
+    .progress {
+      animation: fadeIn linear both;
+      animation-timeline: view();
+      animation-range: entry 50% entry 100%;
+    }
+  }
+}
+
+/* ---------- Mobile: one card per screen ---------- */
+@media (max-width: 767px) {
+  .streams {
+    --cw: 84vw;
+    --side: 8vw;
+    --gap: 16px;
+    --ah: max(220px, min(calc(84vw * 0.92), calc(100svh - 340px)));
+  }
+  .intro {
+    width: 84vw;
+    padding-right: 0;
+  }
+  .h2 {
+    font-size: clamp(30px, 9vw, 40px);
+  }
+  .screen {
+    font-size: clamp(10px, 3.2cqw, 13px);
+  }
+  .from {
+    font-size: 11px;
+  }
+  .progress {
+    gap: 12px;
+  }
+  .bar {
+    display: none;
+  }
+}
+
+/* ---------- Pausing ---------- */
+.streams[data-paused] .art *,
+.streams[data-paused] .klo,
+.streams[data-paused] .hint {
+  animation-play-state: paused !important;
+}
+
+/* ---------- Reduced motion: a plain sideways-scrolling row ---------- */
+.streams[data-still] .sticky {
+  position: relative;
+  height: auto;
+  padding: 96px 0 72px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+}
+.streams[data-still] .intro,
+.streams[data-still] .card {
+  scroll-snap-align: start;
+  scroll-margin-left: var(--side);
+}
+.streams[data-still] .card {
+  opacity: 1;
+  scale: 1;
+}
+.streams[data-still] .progress {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .streams *,
+  .streams *::before,
+  .streams *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

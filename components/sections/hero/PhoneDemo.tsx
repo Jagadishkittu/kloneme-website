@@ -53,7 +53,7 @@ function KmeLogo() {
   );
 }
 
-function StatusBar() {
+export function StatusBar() {
   return (
     <div className={p.status} aria-hidden="true">
       <span>9:41</span>
