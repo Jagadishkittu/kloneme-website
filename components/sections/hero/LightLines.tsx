@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { rng } from "@/lib/rng";
 import s from "./hero.module.css";
 
 // Light-speed lines converging on the phone (look of the Bevel reference): a fan of thin,
@@ -12,17 +13,6 @@ const PER_SIDE = 260;
 
 // Top → bottom colour order, as in the reference (cyan/blue above, pink/peach below)
 const PALETTE = ["#86d3e3", "#6fc3d4", "#93b6f0", "#b9cdf6", "#c6b6f3", "#efa5c6", "#f4bea0", "#f3cf86"];
-
-// Small seeded PRNG so server output is stable between renders
-function rng(seed: number) {
-  return () => {
-    seed |= 0;
-    seed = (seed + 0x6d2b79f5) | 0;
-    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
 
 type Line = { d: string; color: number; opacity: number; width: number; inner: boolean };
 

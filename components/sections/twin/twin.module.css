@@ -1,0 +1,417 @@
+/* ============================================================
+   Twin map — Night Beam (Option A)
+   The section rises over the bottom of the hero as a dark horizon: a huge soft curve whose top
+   point sits right under the phone, where the phone's fade ends. A pastel sunrise glows along
+   its edge, and the beam of light starts at that point and pours down onto Klo.
+   Layers, back to front:
+   horizon (glow → rim light → dark body) → beam → flare at the top point → amber glow → avatars → copy
+   ============================================================ */
+
+.twin {
+  /* Avatar image box (528×456 source) and the distance between avatars */
+  --av: clamp(150px, min(15vw, 24vh), 236px);
+  --avh: calc(var(--av) * 0.8636);
+  --slot: calc(var(--av) * 0.92);
+  /* Room above/below the avatars inside the faded window (blur and decorations) */
+  --pad: 20px;
+  --gap: clamp(4px, 1vh, 10px);
+  --pill-h: 40px;
+  --t: 0.85s;
+  --ease: cubic-bezier(0.65, 0, 0.35, 1);
+  /* Clear room above the horizon for its glow. The hero's margin-bottom includes this 80px. */
+  --rise: 80px;
+  /* Horizon: an ellipse 150vw wide; its vertical radius sets how far the edge drops toward the sides */
+  --hw: 150vw;
+  --hb: max(36vw, 220px);
+  /* From the top point of the horizon to the avatars */
+  --pt: clamp(110px, 19vh, 230px);
+  /* Above the hero, which it overlaps (see .hero margin-bottom) */
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: calc(100svh + var(--rise));
+  padding: calc(var(--rise) + var(--pt)) 0 clamp(32px, 6vh, 80px);
+  overflow: hidden;
+}
+
+/* Focus ring in light on the dark background */
+.twin :focus-visible {
+  outline-color: var(--bg);
+}
+
+/* ---------- Horizon (the transition from the hero) ---------- */
+/* Everything is anchored to the top point (y = --rise, x = centre), so it always meets the phone */
+.horizon {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  transform-origin: 50% var(--rise);
+}
+
+.horizon > span {
+  position: absolute;
+  left: 50%;
+  width: var(--hw);
+  height: calc(var(--hb) * 2);
+  border-radius: 50%;
+  transform: translateX(-50%);
+}
+
+/* Pastel sunrise along the edge, in the hero's line colours, strongest under the phone */
+.horizonGlow {
+  top: calc(var(--rise) - 12px);
+  background: linear-gradient(
+    90deg,
+    rgba(111, 195, 212, 0) 25%,
+    #6fc3d4 36%,
+    #93b6f0 44%,
+    #c6b6f3 50%,
+    #efa5c6 57%,
+    #f4bea0 64%,
+    rgba(244, 190, 160, 0) 75%
+  );
+  filter: blur(22px);
+  opacity: 0.85;
+  animation: glowBreath 7s ease-in-out infinite alternate;
+}
+
+@keyframes glowBreath {
+  from { opacity: 0.65; }
+  to { opacity: 1; }
+}
+
+/* Thin light on the very edge, brightest at the top point and tapering out to the sides */
+.horizonRim {
+  top: var(--rise);
+  background: linear-gradient(
+    90deg,
+    rgba(198, 182, 243, 0) 30%,
+    rgba(198, 182, 243, 0.7) 42%,
+    rgba(255, 255, 255, 0.95) 50%,
+    rgba(239, 165, 198, 0.7) 58%,
+    rgba(239, 165, 198, 0) 70%
+  );
+}
+
+/* Dark body, 1.5px lower so the rim shows above it */
+.horizonBody {
+  top: calc(var(--rise) + 1.5px);
+  background: var(--ink);
+}
+
+/* Fills the rest of the section below the ellipse's widest point */
+.horizon > .horizonFill {
+  top: calc(var(--rise) + var(--hb));
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  border-radius: 0;
+  transform: none;
+  background: var(--ink);
+}
+
+/* Soft light at the top point, where the phone's light passes into the twin */
+.flare {
+  position: absolute;
+  left: 50%;
+  top: var(--rise);
+  z-index: 2;
+  width: 150px;
+  height: 46px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.95) 0%, rgba(198, 182, 243, 0.5) 45%, rgba(147, 182, 240, 0) 100%);
+  filter: blur(3px);
+  animation: flarePulse 3.2s ease-in-out infinite;
+}
+
+@keyframes flarePulse {
+  0%,
+  100% { opacity: 0.55; transform: translate(-50%, -50%) scale(0.9); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
+}
+
+/* ---------- Stage: glow + avatars ---------- */
+.stage {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Beam: starts as a point at the top of the horizon, ends at the middle of the avatars */
+.beam {
+  position: absolute;
+  left: 50%;
+  top: var(--rise);
+  z-index: 1;
+  width: calc(var(--slot) * 3.6);
+  height: calc(var(--pt) + var(--pad) + var(--avh) * 0.5);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.beamHaze,
+.beamLines,
+.beamStreaks {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.beamHaze {
+  opacity: 0.45;
+  filter: blur(16px);
+}
+
+.beamLines {
+  opacity: 0.7;
+  filter: blur(0.6px);
+}
+
+.beamStreaks {
+  opacity: 0.6;
+}
+
+/* Brighter segments running down the lines toward the avatars */
+.streak {
+  fill: none;
+  stroke-linecap: round;
+  animation: beamStreak var(--dur) linear var(--delay) infinite;
+}
+
+@keyframes beamStreak {
+  from { stroke-dashoffset: 1000; }
+  to { stroke-dashoffset: 0; }
+}
+
+/* Warm light behind the middle avatar */
+.spot {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--pad) + var(--avh) * 0.5);
+  width: calc(var(--av) * 1.7);
+  height: calc(var(--av) * 1.4);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgba(245, 179, 31, 0.2) 0%, rgba(245, 179, 31, 0.07) 55%, rgba(245, 179, 31, 0) 100%);
+}
+
+/* ---------- Avatars ---------- */
+/* Four slots wide: three avatars show; the ones coming in and going out stay inside the edge fade */
+.window {
+  position: relative;
+  z-index: 1;
+  width: min(100%, calc(var(--slot) * 4));
+  height: calc(var(--pad) * 2 + var(--avh) + var(--gap) + var(--pill-h));
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 16%, #000 84%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 16%, #000 84%, transparent 100%);
+}
+
+.track {
+  position: absolute;
+  inset: var(--pad) 0 auto;
+  height: calc(var(--avh) + var(--gap) + var(--pill-h));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  display: flex;
+  justify-content: center;
+  width: var(--slot);
+  opacity: 0;
+  transform: translateX(calc(-50% + var(--p) * var(--slot)));
+  transition:
+    transform var(--t) var(--ease),
+    opacity var(--t) var(--ease);
+}
+
+.item[data-pos="0"],
+.item[data-pos="1"],
+.item[data-pos="-1"] {
+  opacity: 1;
+}
+
+/* The avatar that wraps from the far left back to the far right jumps while hidden */
+.item[data-pos="3"],
+.item[data-pos="3"] * {
+  transition: none;
+}
+
+.btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--gap);
+  padding: 0;
+  border: 0;
+  border-radius: 24px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.item[data-pos="0"] .btn {
+  cursor: default;
+}
+
+/* Side avatars: smaller, blurred and dimmed; the middle one is sharp and bright */
+.avatar {
+  display: block;
+  width: var(--av);
+  height: var(--avh);
+  transform: scale(0.7);
+  transform-origin: 50% 80%;
+  filter: blur(10px) brightness(0.45) saturate(0.7);
+  transition:
+    transform var(--t) var(--ease),
+    filter var(--t) var(--ease);
+}
+
+.avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.item[data-pos="0"] .avatar {
+  transform: scale(1);
+  filter: blur(0) brightness(1) saturate(1);
+}
+
+.item[data-pos="1"] .avatar,
+.item[data-pos="-1"] .avatar {
+  transform: scale(0.86);
+  filter: blur(5px) brightness(0.6) saturate(0.85);
+}
+
+/* Glass pills: dim on the sides, lit up in the middle */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  height: var(--pill-h);
+  padding: 0 22px;
+  border-radius: 999px;
+  white-space: nowrap;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.005em;
+  color: rgba(250, 248, 246, 0.4);
+  background-color: rgba(255, 255, 255, 0.03);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+    0 10px 24px -14px rgba(0, 0, 0, 0);
+  transition:
+    color var(--t) var(--ease),
+    background-color var(--t) var(--ease),
+    box-shadow var(--t) var(--ease);
+}
+
+.btn:hover .pill {
+  color: rgba(250, 248, 246, 0.7);
+}
+
+.item[data-pos="0"] .pill {
+  color: var(--bg);
+  background-color: rgba(255, 255, 255, 0.11);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.28),
+    0 10px 24px -14px rgba(0, 0, 0, 0.7);
+}
+
+/* ---------- Copy ---------- */
+.copy {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: clamp(16px, 4vh, 56px);
+  padding: 0 var(--gut);
+  text-align: center;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 767px) {
+  .twin {
+    --av: clamp(96px, 30vw, 136px);
+    --slot: 31vw;
+    --pill-h: 34px;
+  }
+  .window {
+    width: 100%;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 7%, #000 93%, transparent 100%);
+    mask-image: linear-gradient(90deg, transparent 0%, #000 7%, #000 93%, transparent 100%);
+  }
+  .pill {
+    padding: 0 14px;
+    font-size: 13px;
+  }
+}
+
+/* Pause while the section is off-screen (the scroll-linked horizon keeps following the scroll) */
+.twin[data-paused] *,
+.twin[data-paused] *::before,
+.twin[data-paused] *::after {
+  animation-play-state: paused !important;
+}
+
+.twin[data-paused] .horizon {
+  /* scroll-linked, so it must keep following the scroll */
+  animation-play-state: running !important;
+}
+
+/* Scrolling from the hero into this section straightens the horizon: it comes in curved and is a
+   straight line by the time the section reaches the top of the screen. Its top point never moves.
+   Widening the ellipse (scaleX) is what flattens it; the steps keep the straightening even. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .twin {
+      view-timeline: --twin block;
+    }
+    .horizon {
+      animation: horizonStraighten linear both;
+      animation-timeline: --twin;
+      animation-range: entry 0% entry 90%;
+    }
+  }
+}
+
+@keyframes horizonStraighten {
+  0% { transform: scale(1, 1.4); }
+  25% { transform: scale(1.12, 1.3); }
+  50% { transform: scale(1.3, 1.2); }
+  75% { transform: scale(1.75, 1.1); }
+  90% { transform: scale(3.6, 1.02); }
+  100% { transform: scale(14, 1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .twin *,
+  .twin *::before,
+  .twin *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .beamStreaks {
+    display: none;
+  }
+}

@@ -22,6 +22,10 @@
   flex-direction: column;
   align-items: center;
   min-height: 100svh;
+  /* The next section (Twin map) slides up over the bottom 25% of the phone and the space below it,
+     so its horizon starts right where the phone's fade ends. The extra 80px is the clear room the
+     Twin section keeps above its horizon for the glow (twin.module.css --rise). */
+  margin-bottom: calc(-1 * (var(--below) + var(--phone-h) * 0.25 + 80px));
   overflow: hidden;
   background: var(--bg);
 }
