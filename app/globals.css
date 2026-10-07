@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+/* Brand palette (from the client's colour reference) */
+:root {
+  --bg: #faf8f6;
+  --ink: #17141d;
+  --accent: #f5b31f;
+  --muted: #7a7382;
+  --paper: #ffffff;
+  --line: rgba(23, 20, 29, 0.08);
+
+  /* Stream colours, carried over from kloneme-website-v9.html */
+  --sky: #3b8beb;
+  --berry: #d0539f;
+  --coral: #ee6352;
+  --lime: #7cb518;
+  --lagoon: #17a398;
+  --lilac: #8466eb;
+
+  --gut: clamp(16px, 4vw, 40px);
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-ink: var(--ink);
+  --color-accent: var(--accent);
+  --color-muted: var(--muted);
+  --color-paper: var(--paper);
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
