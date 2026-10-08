@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Icon } from "@/components/ui/Icon";
 import { privacy } from "@/content/privacy";
+import { GlassIcon } from "./GlassIcon";
 import s from "./privacy.module.css";
 
 // In-app samples from v9's privacy section, each working like the app
@@ -32,13 +33,7 @@ export function VaultLock() {
 
   return (
     <div ref={ref} className={`${s.widget} ${s.vault}`}>
-      <span className={s.fid} aria-hidden="true">
-        <svg viewBox="0 0 80 80">
-          <path d="M6 24V14a8 8 0 018-8h10M56 6h10a8 8 0 018 8v10M74 56v10a8 8 0 01-8 8H56M24 74H14a8 8 0 01-8-8V56" />
-          <path d="M29 30v4M51 30v4M40 30v14h-4M31 53c5 4 13 4 18 0" />
-        </svg>
-        <span className={s.scan} />
-      </span>
+      <GlassIcon name="face" color="var(--lilac)" size="54px" />
       <div className={s.grow}>
         <small className={s.tag}>{v.label}</small>
         <b className={s.wTitle}>{v.title}</b>
@@ -52,9 +47,7 @@ export function VaultLock() {
           </b>
         </small>
       </div>
-      <span className={s.padlock} aria-hidden="true">
-        <Icon name="lock" strokeWidth={2} />
-      </span>
+      <GlassIcon name="lock" color="var(--lilac)" size="42px" solid className={s.padlock} />
     </div>
   );
 }

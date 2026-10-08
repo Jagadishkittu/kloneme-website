@@ -30,7 +30,7 @@ const PLACE: { ring: 0 | 1; tilt: number }[] = [
   { ring: 1, tilt: 8 }, // Spreadsheet
 ];
 
-// Same angular speed on both rings, so they turn like one wheel
+// Same angular speed on both rings (they turn opposite ways)
 const DUR = [
   (problem.orbit * (RINGS[0].from - RINGS[0].to)) / (RINGS[1].from - RINGS[1].to),
   problem.orbit,
@@ -69,10 +69,10 @@ export default function LooseEnds({ children }: { children: ReactNode }) {
         <div className={s.copy}>{children}</div>
 
         <div className={s.stage}>
-          {/* Soft concentric arcs around the phone */}
+          {/* Glowing concentric rings around the phone, each with a light travelling along it */}
           <div className={s.orbit} aria-hidden="true">
-            {ARCS.map((r) => (
-              <span key={r} className={s.arc} style={{ "--R": `var(${r})` } as CSSProperties} />
+            {ARCS.map((r, i) => (
+              <span key={r} className={s.arc} style={{ "--R": `var(${r})`, "--i": i } as CSSProperties} />
             ))}
           </div>
 
@@ -142,10 +142,13 @@ export default function LooseEnds({ children }: { children: ReactNode }) {
                         "--dur": `${dur}s`,
                         "--delay": `${(-dur * k) / count}s`,
                         "--tilt": `${tilt}deg`,
+                        // The two rings turn opposite ways
+                        "--dir": ring === 0 ? "reverse" : "normal",
                         "--c": streamColor[e.stream],
                       } as CSSProperties
                     }
                   >
+                    {/* A frosted tile with a wash of its stream's colour */}
                     <span className={s.tile}>
                       <Icon name={e.icon} strokeWidth={1.8} />
                       <span className={s.tip} aria-hidden="true">

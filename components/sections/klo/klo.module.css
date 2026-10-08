@@ -1,7 +1,7 @@
 /* ============================================================
    Meet Klo — Bento Dialogue (Option A)
    Light take on the reference: a tall card with a phone running off its bottom edge (Klo chat),
-   and two stacked cards on the right: Klo's rules as tiles, and a short nudge ending in "Thinking…".
+   and two stacked cards on the right: Klo's rules (a list, the open rule loading) and a nudge.
    Sizes inside the phone are in cqw (1cqw = 1% of the phone screen's width), like the hero phone.
    ============================================================ */
 
@@ -291,145 +291,179 @@
   line-height: 1.3;
 }
 
-/* ---------- Rules card ---------- */
+/* ---------- Rules card: a list, the current rule open and loading ----------
+   Brand colours only: paper and cream rows, ink text, the amber accent. The open row fills left to
+   right with soft amber light (a thin amber bar along its bottom) for one turn of the chat; when
+   it's full the row closes and the next one opens. */
 .rulesCard {
+  display: flex;
+  padding: var(--pad);
+  background:
+    radial-gradient(90% 70% at 100% 0%, #fff4dc 0%, rgba(255, 244, 220, 0) 70%),
+    var(--paper);
+}
+
+.rules {
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: var(--pad) 0;
-  background: linear-gradient(180deg, var(--paper) 0%, var(--paper) 50%, #f6f2ed 100%);
+  gap: 10px;
+  list-style: none;
 }
 
-/* Tiles run off the right edge like the reference; the strip scrolls to keep the lit one in view */
-/* The strip scrolls sideways, which clips anything outside it, so its padding leaves room for the
-   lit tile's shadow; the negative margins keep the card's layout unchanged */
-.strip {
+.rule {
   position: relative;
   display: flex;
-  gap: 12px;
-  margin: -14px 0 -28px;
-  padding: 22px var(--pad) 42px;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scroll-padding-inline: var(--pad);
-  scrollbar-width: none;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 calc(var(--pad) * 0.6), #000 calc(100% - 72px), transparent 100%);
-  mask-image: linear-gradient(90deg, transparent 0, #000 calc(var(--pad) * 0.6), #000 calc(100% - 72px), transparent 100%);
-}
-.strip::-webkit-scrollbar {
-  display: none;
-}
-/* Room after the last tile so it can clear the right fade */
-.strip::after {
-  content: "";
-  flex: 0 0 60px;
-}
-
-.tile {
-  position: relative;
-  flex: none;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  width: clamp(200px, 22vw, 248px);
-  padding: 16px 18px 18px;
+  align-items: flex-start;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 16px;
   overflow: hidden;
-  border-radius: 22px;
-  scroll-snap-align: start;
+  border-radius: 20px;
+  background: #f7f4f0;
   text-align: left;
-  background: #f4f1ed;
   color: var(--ink);
   cursor: pointer;
   transition:
-    background-color 0.5s ease,
-    box-shadow 0.5s ease,
-    transform 0.3s var(--ease);
+    background-color 0.45s ease,
+    box-shadow 0.45s ease,
+    padding 0.45s var(--ease);
 }
-.tile:hover {
-  transform: translateY(-2px);
+.rule:hover:not([data-on]) {
+  background: #f2eee9;
 }
-
-/* Lit tile: amber, with a faint sparkle like the reference's active tile */
-.tile::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(rgba(255, 255, 255, 0.55) 0.8px, transparent 1.4px) 0 0 / 11px 11px,
-    radial-gradient(110% 90% at 85% 10%, #ffd873 0%, rgba(255, 216, 115, 0) 60%),
-    linear-gradient(135deg, #f8c23c 0%, var(--accent) 55%, #eba40f 100%);
-  transition: opacity 0.5s ease;
-}
-.tile[data-on] {
-  box-shadow:
-    0 18px 36px -20px rgba(197, 134, 0, 0.65),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5);
-}
-.tile[data-on]::before {
-  opacity: 1;
-}
-.tile > * {
+.rule > :not(.load) {
   position: relative;
 }
-
-.tileHead {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
+.rule[data-on] {
+  padding-block: 18px;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgba(245, 179, 31, 0.45),
+    0 18px 36px -22px rgba(197, 134, 0, 0.55);
 }
-.tileHead b {
+
+/* Loading: soft amber light fills the open row, an amber bar runs along its bottom */
+.load {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(245, 179, 31, 0.08), rgba(245, 179, 31, 0.2));
+  transform-origin: 0 50%;
+  pointer-events: none;
+  animation: loadRow var(--step) linear both;
+}
+.load::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: var(--accent);
+}
+@keyframes loadRow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.ruleIcon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  flex: none;
+  border-radius: 12px;
+  background: #fff;
+  color: var(--muted);
+  box-shadow: 0 0 0 1px rgba(23, 20, 29, 0.06);
+  transition:
+    background-color 0.45s ease,
+    color 0.45s ease,
+    box-shadow 0.45s ease;
+}
+.ruleIcon svg {
+  width: 18px;
+  height: 18px;
+}
+.rule[data-on] .ruleIcon {
+  background: var(--accent);
+  color: var(--ink);
+  box-shadow: 0 8px 16px -8px rgba(197, 134, 0, 0.8);
+  animation: popIn 0.5s var(--ease) both;
+}
+
+.ruleText {
+  flex: 1;
+  min-width: 0;
+  padding-top: 8px;
+}
+.ruleText b {
+  display: block;
   font-size: 15px;
   font-weight: 600;
-  line-height: 1.3;
-}
-
-.tileIcon {
-  display: grid;
-  flex: none;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 9px;
-  background: #fff;
-  transition: background-color 0.5s ease;
-}
-.tileIcon svg {
-  width: 16px;
-  height: 16px;
-}
-.tile[data-on] .tileIcon {
-  background: rgba(255, 255, 255, 0.6);
-}
-
-.track {
-  height: 4px;
-  overflow: hidden;
-  border-radius: 4px;
-  background: rgba(23, 20, 29, 0.1);
-}
-.tile[data-on] .track {
-  background: rgba(23, 20, 29, 0.14);
-}
-
-.fill {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: var(--ink);
-  transform-origin: 0 50%;
-  animation: fillBar var(--step) linear both;
-}
-
-.tileBody {
-  font-size: 13px;
-  line-height: 1.45;
+  line-height: 1.35;
   color: var(--muted);
-  transition: color 0.5s ease;
+  transition: color 0.45s ease;
 }
-.tile[data-on] .tileBody {
-  color: rgba(23, 20, 29, 0.72);
+.rule[data-on] .ruleText b {
+  font-size: 16.5px;
+  color: var(--ink);
+}
+
+/* The open rule's line slides open underneath its title */
+.ruleBody {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 0.5s var(--ease),
+    opacity 0.4s ease;
+}
+.ruleBody > span {
+  min-height: 0;
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.rule[data-on] .ruleBody {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.rule[data-on] .ruleBody > span {
+  padding-top: 4px;
+  animation: riseIn 0.6s var(--ease) 0.15s both;
+}
+
+.ruleNum {
+  padding-top: 9px;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+  color: rgba(23, 20, 29, 0.3);
+  transition: color 0.45s ease;
+}
+.rule[data-on] .ruleNum {
+  color: #b07a00;
+}
+
+@keyframes popIn {
+  from {
+    scale: 0.6;
+    opacity: 0;
+  }
+}
+@keyframes riseIn {
+  from {
+    translate: 0 10px;
+    opacity: 0;
+  }
 }
 
 /* ---------- Nudge card ---------- */
@@ -644,11 +678,6 @@
   to { transform: scale(2.6); opacity: 0; }
 }
 
-@keyframes fillBar {
-  from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
-}
-
 @keyframes bob {
   0%,
   100% { transform: translateY(0); }
@@ -673,10 +702,7 @@
     width: min(82%, 340px);
   }
   .rulesCard {
-    padding: 26px 0;
-  }
-  .tile {
-    width: min(240px, 72vw);
+    padding: 22px 18px;
   }
   .nudgeCard {
     padding: 32px 24px;
@@ -726,7 +752,7 @@
 }
 
 /* Pointer or keyboard focus on the phone or the rules: hold the current exchange */
-.bento[data-hold] .fill {
+.bento[data-hold] .load {
   animation-play-state: paused;
 }
 

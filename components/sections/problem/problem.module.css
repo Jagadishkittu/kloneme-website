@@ -1,7 +1,8 @@
 /* ============================================================
-   Problem — Orbit Inbox (Option A, revision 1)
-   A near-full-screen pale sky-to-lagoon panel with soft concentric arcs around a phone. v9's ten
-   scattered places travel along two of the arcs as tilted tiles, turning like one slow wheel.
+   Problem — Orbit Inbox (Option A, revision 4)
+   A near-full-screen panel in one light lavender gradient, with soft white rings around a phone
+   and a gentle light gliding along each. v9's ten scattered places ride two of the rings as
+   frosted white tiles with a wash of their stream colour, the two rings turning opposite ways.
    The phone holds the loose ends, filed by stream. Copy on the right.
    Panel geometry uses --u: 1% of the panel's width, or less when the screen is short, so the
    whole picture always fits the panel's height. Inside the phone, cqw is the phone screen.
@@ -22,7 +23,8 @@
   height: max(520px, min(calc(100cqw * 17 / 31), 100svh));
   overflow: clip;
   clip-path: inset(var(--inset) round var(--radius));
-  background: linear-gradient(180deg, #eceefa 0%, #e5eef7 45%, #d3ecee 100%);
+  isolation: isolate;
+  background: linear-gradient(160deg, #e9e3fd 0%, #f1edfd 45%, #f9f8ff 100%);
 }
 
 /* Transition in: edge to edge as it arrives, settling into the padded, rounded panel by the time
@@ -64,8 +66,8 @@
   inset: 0 0 0 -6%;
   z-index: -1;
   pointer-events: none;
-  background: linear-gradient(180deg, #eceefa 0%, #e5eef7 45%, #d3ecee 100%);
-  opacity: 0.62;
+  background: linear-gradient(180deg, #f2eefd 0%, #f5f2fe 55%, #f9f8ff 100%);
+  opacity: 0.7;
   -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 34%);
   mask-image: linear-gradient(90deg, transparent 0%, #000 34%);
 }
@@ -109,11 +111,37 @@
   border-radius: 50%;
   background: radial-gradient(
     closest-side,
-    rgba(255, 255, 255, 0) calc(100% - 38px),
-    rgba(255, 255, 255, 0.26) calc(100% - 8px),
-    rgba(255, 255, 255, 0.8) calc(100% - 1.5px),
+    rgba(255, 255, 255, 0) calc(100% - 44px),
+    rgba(255, 255, 255, 0.22) calc(100% - 10px),
+    rgba(255, 255, 255, 0.95) calc(100% - 1.5px),
     rgba(255, 255, 255, 0) 100%
   );
+}
+/* The travelling light: a bright arc of the ring, turning (alternate rings turn the other way) */
+.arc::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg 300deg,
+    rgba(255, 255, 255, 0) 290deg,
+    rgba(255, 255, 255, 0.9) 356deg,
+    transparent 360deg
+  );
+  -webkit-mask-image: radial-gradient(closest-side, transparent calc(100% - 3.5px), #000 calc(100% - 3px), #000 calc(100% - 0.5px), transparent 100%);
+  mask-image: radial-gradient(closest-side, transparent calc(100% - 3.5px), #000 calc(100% - 3px), #000 calc(100% - 0.5px), transparent 100%);
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.9));
+  animation: travel calc(18s + var(--i) * 6s) linear calc(var(--i) * -3.1s) infinite;
+}
+.arc:nth-child(even)::after {
+  animation-direction: reverse;
+}
+@keyframes travel {
+  to {
+    rotate: 360deg;
+  }
 }
 
 .tiles {
@@ -129,7 +157,9 @@
   left: 0;
   top: 0;
   transform: rotate(calc(var(--base) + var(--still))) translateX(var(--R)) rotate(calc(-0.5 * var(--still) - var(--base)));
+  /* The inner ring runs one way, the outer ring the other (--dir from LooseEnds) */
   animation: ride var(--dur) linear var(--delay) infinite;
+  animation-direction: var(--dir, normal);
 }
 
 @keyframes ride {
@@ -162,20 +192,33 @@
   height: var(--tile);
   translate: -50% -50%;
   rotate: var(--tilt);
-  border-radius: 26%;
-  background: #fff;
-  color: var(--c);
+  border-radius: 28%;
+  background:
+    radial-gradient(120% 80% at 50% 112%, color-mix(in srgb, var(--c) 24%, transparent), transparent 62%),
+    linear-gradient(165deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.78));
+  color: color-mix(in srgb, var(--c) 82%, #17141d);
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.9),
-    0 16px 32px -16px rgba(38, 58, 92, 0.38);
+    inset 0 1px 0 #fff,
+    inset 0 0 0 1px rgba(255, 255, 255, 0.8),
+    0 0 0 1px color-mix(in srgb, var(--c) 12%, transparent),
+    0 18px 34px -18px color-mix(in srgb, var(--c) 50%, rgba(38, 30, 80, 0.3));
   transition: scale 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
+/* Gloss across the top half */
+.tile::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 48%;
+  border-radius: inherit;
+  border-bottom-left-radius: 50% 30%;
+  border-bottom-right-radius: 50% 30%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0));
+  pointer-events: none;
+}
 .tile > svg {
+  position: relative;
   width: 42%;
   height: 42%;
-}
-.tile:hover {
-  scale: 1.08;
 }
 
 /* Place and problem, on hover */
@@ -318,10 +361,12 @@
   place-items: center;
   width: 14cqw;
   height: 16cqw;
-  border-radius: 2.6cqw;
-  background: #fff;
-  color: var(--c);
-  box-shadow: 0 0 0 1px rgba(23, 20, 29, 0.08);
+  border-radius: 3.4cqw;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--c) 8%, #fff), color-mix(in srgb, var(--c) 20%, #fff));
+  color: color-mix(in srgb, var(--c) 82%, #17141d);
+  box-shadow:
+    inset 0 1px 0 #fff,
+    0 0 0 1px color-mix(in srgb, var(--c) 18%, transparent);
 }
 .thumb svg {
   width: 6.4cqw;
@@ -388,7 +433,7 @@
   }
   .copy::before {
     inset: 0;
-    background: radial-gradient(ellipse at 50% 45%, rgba(236, 238, 250, 0.9) 45%, rgba(236, 238, 250, 0) 78%);
+    background: radial-gradient(ellipse at 50% 45%, rgba(241, 237, 253, 0.9) 45%, rgba(241, 237, 253, 0) 78%);
     -webkit-mask-image: none;
     mask-image: none;
   }
@@ -415,13 +460,15 @@
 }
 
 /* ---------- Pausing ---------- */
-.panel[data-paused] .slot {
+.panel[data-paused] .slot,
+.panel[data-paused] .arc::after {
   animation-play-state: paused;
 }
 
 /* Reduced motion: tiles rest, evenly spaced along their arcs */
 @media (prefers-reduced-motion: reduce) {
-  .slot {
+  .slot,
+  .arc::after {
     animation: none;
   }
   .tile,

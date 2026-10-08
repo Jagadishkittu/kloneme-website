@@ -49,3 +49,9 @@ body {
   outline: 2px solid var(--ink);
   outline-offset: 3px;
 }
+
+/* Contact: a topic card unfolding into the form (and folding back) */
+::view-transition-group(*) {
+  animation-duration: 0.5s;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}

@@ -1,67 +1,95 @@
 import type { CSSProperties } from "react";
-import { Icon } from "@/components/ui/Icon";
 import { streams } from "@/content/streams";
 import s from "./privacy.module.css";
 
-// Face ID, on every stream: a dot-projector face lights up as the scan line passes, a check pops in,
-// then the six stream chips around it unlock one by one (and lock again, and the cycle repeats).
-// All CSS animation on one shared cycle (--cycle in privacy.module.css).
+// Face ID as a depth scan: fine horizontal lines lie flat; a soft scan light glides down and each
+// line rises as it passes, so a face emerges in relief. Thin Face ID corners ease in around it and
+// six small lilac dots light up (every stream). Then the lines settle and it
+// repeats. All CSS, on one loop (--cycle in privacy.module.css).
 
-// Dots inside a face-shaped oval, in offset rows; --d is how far down the face each one sits
-const DOTS = (() => {
-  const out: { x: number; y: number; d: number }[] = [];
-  let row = 0;
-  for (let y = 13; y <= 87; y += 5, row++) {
-    for (let x = 12 + (row % 2) * 2.5; x <= 88; x += 5) {
-      const nx = (x - 50) / 32;
-      const ny = (y - 50) / 38;
-      if (nx * nx + ny * ny <= 1) out.push({ x, y, d: (y - 13) / 74 });
-    }
-  }
-  return out;
-})();
+// Height of the face at a point (0 off the face): a soft dome, with nose, brow, lips and chin
+// raised and the eye sockets set in
+const g = (x: number, y: number, cx: number, cy: number, sx: number, sy: number) =>
+  Math.exp(-(((x - cx) / sx) ** 2 + ((y - cy) / sy) ** 2));
+
+function depth(x: number, y: number) {
+  const nx = (x - 50) / 26;
+  const ny = (y - 50) / 35;
+  const r = nx * nx + ny * ny;
+  if (r >= 1) return 0;
+  let h = 7 * Math.sqrt(1 - r);
+  h += 4.4 * g(x, y, 50, 53, 3.2, 9);
+  h -= 2.6 * (g(x, y, 39.5, 43, 5, 3.4) + g(x, y, 60.5, 43, 5, 3.4));
+  h += 1.4 * g(x, y, 50, 36, 14, 2.6);
+  h += 1.6 * g(x, y, 50, 69, 6, 2.2);
+  h += 1.2 * g(x, y, 50, 80, 8, 3);
+  return h * Math.min(1, (1 - r) * 4);
+}
+
+// One line per row; each rises from its baseline (--y) by the face's height along it
+const LINES = Array.from({ length: 20 }, (_, i) => {
+  const y = 12 + i * 4;
+  const pts: string[] = [];
+  for (let x = 8; x <= 92.01; x += 1.5) pts.push(`${x.toFixed(1)} ${(y - depth(x, y) * 0.55).toFixed(2)}`);
+  return { y, d: `M${pts.join("L")}` };
+});
 
 export default function FaceScan() {
   return (
     <div className={s.scanner} aria-hidden="true">
       <span className={s.scanGlow} />
-      <svg className={s.orbit} viewBox="0 0 100 100">
-        <circle cx="50" cy="50" r="40" />
-      </svg>
+      <svg className={s.faceArt} viewBox="0 0 100 100">
+        <defs>
+          <linearGradient id="fs-line" gradientUnits="userSpaceOnUse" x1="8" y1="0" x2="92" y2="0">
+            <stop offset="0" stopColor="#8466eb" stopOpacity="0" />
+            <stop offset="0.22" stopColor="#5236b8" />
+            <stop offset="0.78" stopColor="#5236b8" />
+            <stop offset="1" stopColor="#8466eb" stopOpacity="0" />
+          </linearGradient>
+          {/* The dots share the lines' lilac, light to deep across the row */}
+          <linearGradient id="fs-dots" gradientUnits="userSpaceOnUse" x1="41" y1="0" x2="59" y2="0">
+            <stop offset="0" stopColor="#a993ff" />
+            <stop offset="1" stopColor="#5236b8" />
+          </linearGradient>
+          <linearGradient id="fs-beam" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#8466eb" stopOpacity="0" />
+            <stop offset="1" stopColor="#8466eb" stopOpacity="0.28" />
+          </linearGradient>
+        </defs>
 
-      <div className={s.face}>
-        <svg className={s.mesh} viewBox="0 0 100 100">
-          {DOTS.map((p) => (
-            <circle key={`${p.x}-${p.y}`} cx={p.x} cy={p.y} r="1.15" style={{ "--d": p.d.toFixed(3) } as CSSProperties} />
-          ))}
-          {/* Eyes, nose and smile (v9's Face ID glyph) */}
-          <path className={s.features} d="M36 37.5v5M64 37.5v5M50 37.5V55h-5M38.75 66c6.25 5 16.25 5 22.5 0" />
-        </svg>
-        <svg className={s.brackets} viewBox="0 0 80 80">
-          <path d="M6 24V14a8 8 0 018-8h10M56 6h10a8 8 0 018 8v10M74 56v10a8 8 0 01-8 8H56M24 74H14a8 8 0 01-8-8V56" />
-        </svg>
-        <span className={s.sweep} />
-        <span className={s.ok}>
-          <Icon name="check" strokeWidth={2.6} />
-        </span>
-      </div>
-
-      {/* The six streams, each with a lock that opens once Face ID passes */}
-      <ul className={s.chips}>
-        {streams.cards.map((c, i) => (
-          <li key={c.key} style={{ "--a": `${i * 60 - 90}deg`, "--c": c.color, "--i": i } as CSSProperties}>
-            <span className={s.chip}>
-              <Icon name={c.icon} strokeWidth={2} />
-              <span className={s.chipLock}>
-                <svg viewBox="0 0 24 24">
-                  <path className={s.shackle} d="M8 11V8a4 4 0 018 0v3" />
-                  <rect x="5.5" y="11" width="13" height="9.5" rx="2.5" />
-                </svg>
-              </span>
-            </span>
-          </li>
+        {LINES.map((l, i) => (
+          <path
+            key={l.y}
+            className={s.reliefLine}
+            d={l.d}
+            stroke="url(#fs-line)"
+            style={{ "--i": i, "--y": `${l.y}px` } as CSSProperties}
+          />
         ))}
-      </ul>
+
+        {/* The scan light: a soft band with a bright edge */}
+        <g className={s.beamBand}>
+          <rect x="6" y="-10" width="88" height="10" fill="url(#fs-beam)" />
+          <rect x="6" y="-0.4" width="88" height="0.8" rx="0.4" fill="#fff" />
+        </g>
+
+        <path
+          className={s.fidCorners}
+          d="M20 22v-6a6 6 0 016-6h6M68 10h6a6 6 0 016 6v6M80 78v6a6 6 0 01-6 6h-6M32 90h-6a6 6 0 01-6-6v-6"
+        />
+
+        {streams.cards.map((c, i) => (
+          <circle
+            key={c.key}
+            className={s.streamDot}
+            cx={42.5 + i * 3}
+            cy="96"
+            r="0.9"
+            fill="url(#fs-dots)"
+            style={{ "--i": i } as CSSProperties}
+          />
+        ))}
+      </svg>
     </div>
   );
 }

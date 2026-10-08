@@ -24,7 +24,6 @@ const CAL_AT = STREAM_AT + words * WORD_STEP + 0.35;
 
 export default function KloBento() {
   const ref = useRef<HTMLDivElement>(null);
-  const strip = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
   const [run, setRun] = useState(0); // bumped on every change so the chat and the timer bar replay
   const [onScreen, setOnScreen] = useState(false);
@@ -53,15 +52,6 @@ export default function KloBento() {
     const t = setTimeout(() => setLoop((l) => l + 1), nudge.loop * 1000);
     return () => clearTimeout(t);
   }, [onScreen, loop]);
-
-  // Keep the lit rule tile in view (scrolls the strip sideways, never the page)
-  useEffect(() => {
-    const el = strip.current;
-    const tile = el?.children[active] as HTMLElement | undefined;
-    if (!el || !tile) return;
-    const smooth = !matchMedia("(prefers-reduced-motion: reduce)").matches;
-    el.scrollTo({ left: tile.offsetLeft - parseFloat(getComputedStyle(el).paddingLeft), behavior: smooth ? "smooth" : "auto" });
-  }, [active]);
 
   const hold = {
     onPointerEnter: () => setHovered(true),
@@ -148,31 +138,39 @@ export default function KloBento() {
         </div>
       </div>
 
-      {/* Klo's rules; the one the chat is showing is lit, and its bar times the next turn */}
+      {/* Klo's rules as a list: the current rule opens and loads (its row fills with amber light);
+          when it's full, it closes and the next one opens. Its timing drives the chat. */}
       <div className={`${s.card} ${s.rulesCard}`} {...hold}>
-        <div ref={strip} className={s.strip} role="group" aria-label="Klo’s rules">
-          {rules.map((r, i) => (
-            <button
-              key={r.title}
-              type="button"
-              className={s.tile}
-              data-on={i === active || undefined}
-              aria-current={i === active ? "true" : undefined}
-              onClick={() => go(i)}
-            >
-              <span className={s.tileHead}>
-                <span className={s.tileIcon}>
-                  <Icon name={r.icon} strokeWidth={2} />
-                </span>
-                <b>{r.title}</b>
-              </span>
-              <span className={s.track}>
-                {i === active && <span key={run} className={s.fill} onAnimationEnd={() => go(active + 1)} />}
-              </span>
-              <span className={s.tileBody}>{r.body}</span>
-            </button>
-          ))}
-        </div>
+        <ol className={s.rules} aria-label="Klo’s rules">
+          {rules.map((r, i) => {
+            const on = i === active;
+            return (
+              <li key={r.title}>
+                <button
+                  type="button"
+                  className={s.rule}
+                  data-on={on || undefined}
+                  aria-current={on ? "true" : undefined}
+                  onClick={() => go(i)}
+                >
+                  {on && <span key={run} className={s.load} aria-hidden="true" onAnimationEnd={() => go(active + 1)} />}
+                  <span className={s.ruleIcon}>
+                    <Icon name={r.icon} strokeWidth={2} />
+                  </span>
+                  <span className={s.ruleText}>
+                    <b>{r.title}</b>
+                    <span className={s.ruleBody}>
+                      <span>{r.body}</span>
+                    </span>
+                  </span>
+                  <span className={s.ruleNum} aria-hidden="true">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ol>
       </div>
 
       {/* A morning nudge: the answer streams in, its dates light up, and the calendar it came from draws in */}
