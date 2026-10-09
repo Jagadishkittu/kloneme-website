@@ -1,24 +1,28 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Icon } from "@/components/ui/Icon";
 import { useMedia } from "@/components/ui/useMedia";
-import { how } from "@/content/how";
-import s from "./how.module.css";
+import { stories } from "@/content/stories";
+import s from "./stories.module.css";
 
-const STEPS = how.steps;
-const N = STEPS.length;
-const READ = 0.75; // share of each step's scroll spent lighting its words (the rest holds it fully lit)
+const LIST = stories.list;
+const N = LIST.length;
+const READ = 0.75; // share of each story's scroll spent lighting its words (the rest holds it fully lit)
 
-type Part = "title" | "quote" | "body";
+type Part = "quote" | "effect";
 type Word = { t: string; part: Part; n: number };
 
-// Every step's words in reading order: title, then the spoken quote (step 3), then the rest
-const WORDS = STEPS.map((st) => {
+// Every story's words in reading order: the quote, then the KloneME effect
+const WORDS = LIST.map((st) => {
   let n = 0;
-  const split = (text: string | undefined, part: Part) =>
-    (text ?? "").split(" ").filter(Boolean).map((t) => ({ t, part, n: n++ }));
-  const words: Word[] = [...split(st.title, "title"), ...split(st.quote, "quote"), ...split(st.body, "body")];
+  const split = (text: string, part: Part) =>
+    text
+      .split(" ")
+      .filter(Boolean)
+      .map((t) => ({ t, part, n: n++ }));
+  const words: Word[] = [...split(st.quote, "quote"), ...split(st.effect, "effect")];
   return words;
 });
 
@@ -29,7 +33,7 @@ export default function ReadAlong() {
   const still = useMedia("(prefers-reduced-motion: reduce)");
   const [pos, setPos] = useState({ step: 0, lit: 0 });
 
-  // Scrolling through the pinned stretch reads the steps: each step's words light up in turn
+  // Scrolling through the pinned stretch reads the stories: each story's words light up in turn
   useEffect(() => {
     const sec = section.current;
     if (!sec || still) return;
@@ -56,7 +60,7 @@ export default function ReadAlong() {
     };
   }, [still]);
 
-  // A pill jumps to its step, fully read
+  // A pill jumps to its story, fully read
   const go = (i: number) => {
     const sec = section.current;
     if (!sec) return;
@@ -73,32 +77,41 @@ export default function ReadAlong() {
   const litIn = (i: number) => (still || i < pos.step ? WORDS[i].length : i === pos.step ? pos.lit : 0);
 
   return (
-    <section ref={section} id="how" aria-labelledby="how-h" className={s.section} data-still={still || undefined}>
+    <section ref={section} id="stories" aria-labelledby="stories-h" className={s.section} data-still={still || undefined}>
+      {/* Transition from the dark Calendar section: a light sheet whose rounded top corners flatten as it scrolls in */}
+      <span className={s.backing} aria-hidden="true" />
+      <span className={s.sheet} aria-hidden="true" />
       <div className={s.sticky}>
         <div className={s.col}>
           <p className={s.kicker}>
             <i aria-hidden="true" />
-            {how.kicker}
+            {stories.kicker}
           </p>
-          <h2 id="how-h" className={s.h2}>
-            <span className={s.lead}>{how.headline.lead}</span> <span className={s.accent}>{how.headline.accent}</span>
+          <h2 id="stories-h" className={s.h2}>
+            <span className={s.lead}>{stories.headline.lead}</span>{" "}
+            <span className={s.accent}>{stories.headline.accent}</span>
           </h2>
+          <p className={s.sub}>{stories.sub}</p>
+          <p className={s.note}>
+            <Icon name="info" strokeWidth={2} />
+            {stories.note}
+          </p>
 
-          {/* The steps as coloured pills; the one being read fills as its words light up */}
-          <div className={s.pills} role="group" aria-label={how.kicker}>
-            {STEPS.map((st, i) => {
+          {/* The people as coloured pills; the one being read fills as its words light up */}
+          <div className={s.pills} role="group" aria-label={stories.label}>
+            {LIST.map((st, i) => {
               const f = litIn(i) / WORDS[i].length;
               const label = (
                 <span className={s.pLabel}>
-                  <span className={s.emo} data-anim={st.anim} aria-hidden="true">
-                    <span>{st.emoji}</span>
+                  <span className={s.av} aria-hidden="true">
+                    {st.initials}
                   </span>
-                  {st.label}
+                  <span className={s.pName}>{st.name}</span>
                 </span>
               );
               return (
                 <button
-                  key={st.label}
+                  key={st.name}
                   type="button"
                   className={s.pill}
                   data-on={(!still && i === pos.step) || undefined}
@@ -115,13 +128,11 @@ export default function ReadAlong() {
             })}
           </div>
 
-          {/* The step being read, as one big two-tone paragraph lighting up word by word */}
+          {/* The story being read: the quote lighting up word by word, then its KloneME effect, then who said it */}
           <div className={s.read}>
-            {STEPS.map((st, i) => {
+            {LIST.map((st, i) => {
               const lit = litIn(i);
               const words = WORDS[i];
-              const quote = words.filter((w) => w.part === "quote");
-              const speaking = quote.length > 0 && lit > quote[0].n && lit <= quote[quote.length - 1].n + 1;
               const show = (part: Part) =>
                 words
                   .filter((w) => w.part === part)
@@ -131,24 +142,47 @@ export default function ReadAlong() {
                     </span>
                   ));
               return (
-                <p
-                  key={st.label}
+                <figure
+                  key={st.name}
                   data-para
                   className={s.para}
                   data-active={still || i === pos.step || undefined}
-                  style={{ "--c": st.color } as CSSProperties}
+                  data-done={lit >= words.length || undefined}
+                  style={{ "--c": st.color, "--t": st.tint } as CSSProperties}
                 >
-                  <span className={s.title}>{show("title")}</span>
-                  {st.quote && (
-                    <span className={s.quote} data-speaking={speaking || undefined}>
-                      <span className={s.mic} aria-hidden="true">
-                        <Icon name="mic" strokeWidth={2.2} />
-                      </span>
-                      {show("quote")}
+                  <blockquote className={s.title}>{show("quote")}</blockquote>
+                  <p className={s.effect}>
+                    <span className={s.effLabel}>
+                      <span aria-hidden="true">{st.emoji}</span> {stories.effectLabel}
                     </span>
-                  )}
-                  <span className={s.body}>{show("body")}</span>
-                </p>
+                    <span className={s.body}>{show("effect")}</span>
+                  </p>
+                  <figcaption className={s.who}>
+                    <span className={s.whoAv} aria-hidden="true">
+                      {st.initials}
+                    </span>
+                    <span className={s.whoT}>
+                      <b>{st.name}</b>
+                      <span>
+                        {st.role} · {st.place}
+                      </span>
+                    </span>
+                    <span className={s.tags}>
+                      {st.tags.map((t) => (
+                        <span
+                          key={t}
+                          style={{ "--c": stories.tags[t].color, "--t": stories.tags[t].tint } as CSSProperties}
+                        >
+                          {t}
+                        </span>
+                      ))}
+                    </span>
+                    <span className={s.klo}>
+                      <Image src={`/klo/${st.face}.png`} alt="" width={528} height={456} sizes="40px" />
+                      <em>{st.mood}</em>
+                    </span>
+                  </figcaption>
+                </figure>
               );
             })}
           </div>

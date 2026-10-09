@@ -2,8 +2,10 @@
    Problem — Orbit Inbox (Option A, revision 4)
    A near-full-screen panel in one light lavender gradient, with soft white rings around a phone
    and a gentle light gliding along each. v9's ten scattered places ride two of the rings as
-   frosted white tiles with a wash of their stream colour, the two rings turning opposite ways.
-   The phone holds the loose ends, filed by stream. Copy on the right.
+   plain white frames, each with a flat icon in its own shape (calendar, envelope, sticky note…)
+   centred in it after the client's reference: one solid colour with white details, four colours
+   taken in turn so no neighbours match. The two rings turn opposite ways. The phone holds the
+   loose ends, filed by stream, each with the same icon. Copy on the right.
    Panel geometry uses --u: 1% of the panel's width, or less when the screen is short, so the
    whole picture always fits the panel's height. Inside the phone, cqw is the phone screen.
    ============================================================ */
@@ -54,8 +56,9 @@
   left: calc(var(--u) * 62);
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 32px clamp(24px, 4cqw, 64px) 32px clamp(16px, 2cqw, 32px);
+  /* The text sits towards the right, a comfortable margin in from the panel's edge */
+  justify-content: flex-end;
+  padding: 32px clamp(44px, 9cqw, 140px) 32px clamp(16px, 2cqw, 32px);
 }
 
 /* A light veil of the panel's own colours behind the copy: the arcs still show through, dimmed,
@@ -78,12 +81,12 @@
   --cx: calc(var(--u) * 18);
   --cy: 50%;
   --r0: calc(var(--u) * 15);
-  --r1: calc(var(--u) * 27);
-  --r2: calc(var(--u) * 38.5);
-  --r3: calc(var(--u) * 50);
-  --r4: calc(var(--u) * 62);
+  --r1: calc(var(--u) * 26.5);
+  --r2: calc(var(--u) * 41);
+  --r3: calc(var(--u) * 52.5);
+  --r4: calc(var(--u) * 63.5);
   --r5: calc(var(--u) * 76);
-  --tile: calc(var(--u) * 7);
+  --tile: calc(var(--u) * 6.2);
   --base: 0deg;
   position: absolute;
   inset: 0;
@@ -182,7 +185,10 @@
   animation-play-state: paused;
 }
 
+/* Each place is a plain white frame with a flat icon in its own shape centred in it
+   (ShapeIcon.tsx), as in the client's reference */
 .tile {
+  --cs: calc(var(--tile) * 0.66);
   position: absolute;
   left: 0;
   top: 0;
@@ -192,36 +198,60 @@
   height: var(--tile);
   translate: -50% -50%;
   rotate: var(--tilt);
-  border-radius: 28%;
-  background:
-    radial-gradient(120% 80% at 50% 112%, color-mix(in srgb, var(--c) 24%, transparent), transparent 62%),
-    linear-gradient(165deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.78));
-  color: color-mix(in srgb, var(--c) 82%, #17141d);
+  border-radius: 26%;
+  background: #fff;
   box-shadow:
-    inset 0 1px 0 #fff,
-    inset 0 0 0 1px rgba(255, 255, 255, 0.8),
-    0 0 0 1px color-mix(in srgb, var(--c) 12%, transparent),
-    0 18px 34px -18px color-mix(in srgb, var(--c) 50%, rgba(38, 30, 80, 0.3));
+    0 0 0 1px rgba(23, 20, 29, 0.05),
+    0 18px 34px -18px rgba(38, 30, 80, 0.38);
   transition: scale 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-/* Gloss across the top half */
-.tile::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 48%;
-  border-radius: inherit;
-  border-bottom-left-radius: 50% 30%;
-  border-bottom-right-radius: 50% 30%;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0));
-  pointer-events: none;
-}
-.tile > svg {
+
+/* ---------- Flat icon (ShapeIcon.tsx), after the client's reference ----------
+   One solid shape in its colour (--gc) with its details in white: no gradients, no depth.
+   --cs: the icon's size. */
+.shape {
   position: relative;
-  width: 42%;
-  height: 42%;
+  display: grid;
+  place-items: center;
+  width: var(--cs);
+  height: var(--cs);
+}
+.shape svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.body {
+  fill: var(--gc);
+}
+.mark {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.thin {
+  stroke-width: 5;
+}
+.markFill {
+  fill: #fff;
+  stroke: #fff;
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+.fold {
+  fill: #fff;
+  opacity: 0.45;
+}
+.glyph {
+  position: relative;
+  width: 44%;
+  height: 44%;
+  color: #fff;
 }
 
-/* Place and problem, on hover */
 .tip {
   position: absolute;
   left: 50%;
@@ -257,163 +287,11 @@
   width: calc(var(--u) * 26);
 }
 
-/* Soft lilac and amber light at the top of the screen */
-.glow {
-  position: absolute;
-  inset: 0 0 auto;
-  height: 72cqw;
-  background:
-    radial-gradient(70% 60% at 25% 12%, #e2dcff 0%, rgba(226, 220, 255, 0) 70%),
-    radial-gradient(60% 55% at 88% 4%, #ffe8bd 0%, rgba(255, 232, 189, 0) 70%);
-}
-
-.bar {
-  position: absolute;
-  z-index: 2;
-  top: 16cqw;
-  left: 5cqw;
-  right: 5cqw;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.round,
-.pill {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 12cqw;
-  border-radius: 999px;
-  background: #fff;
-  box-shadow:
-    0 0 0 1px rgba(23, 20, 29, 0.05),
-    0 0.6cqw 2.4cqw rgba(23, 20, 29, 0.08);
-}
-.round {
-  width: 12cqw;
-}
-.pill {
-  gap: 5cqw;
-  padding: 0 4.6cqw;
-}
-.round svg,
-.pill svg {
-  width: 5.4cqw;
-  height: 5.4cqw;
-}
-
-.title {
-  position: absolute;
-  top: 33cqw;
-  left: 6cqw;
-  font-size: 7.4cqw;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-}
-
-.filters {
-  position: absolute;
-  top: 46cqw;
-  left: 5cqw;
-  right: 0;
-  display: flex;
-  gap: 2cqw;
-  overflow: hidden;
-  white-space: nowrap;
-}
-.filters span {
-  flex: none;
-  display: grid;
-  place-items: center;
-  height: 9.4cqw;
-  padding: 0 4cqw;
-  border-radius: 999px;
-  background: rgba(23, 20, 29, 0.06);
-  font-size: 3.8cqw;
-  font-weight: 500;
-  color: var(--muted);
-}
-.filters span:first-child {
-  background: var(--ink);
-  color: #fff;
-}
-
-.list {
-  position: absolute;
-  top: 60cqw;
-  left: 0;
-  right: 0;
-  padding: 0 5cqw;
-}
-
-.rowBody {
-  display: flex;
-  align-items: center;
-  gap: 3.6cqw;
-  padding: 3.2cqw 0;
-  border-bottom: 1px solid rgba(23, 20, 29, 0.07);
-}
-
-.thumb {
-  display: grid;
-  flex: none;
-  place-items: center;
-  width: 14cqw;
-  height: 16cqw;
-  border-radius: 3.4cqw;
-  background: linear-gradient(160deg, color-mix(in srgb, var(--c) 8%, #fff), color-mix(in srgb, var(--c) 20%, #fff));
-  color: color-mix(in srgb, var(--c) 82%, #17141d);
-  box-shadow:
-    inset 0 1px 0 #fff,
-    0 0 0 1px color-mix(in srgb, var(--c) 18%, transparent);
-}
-.thumb svg {
-  width: 6.4cqw;
-  height: 6.4cqw;
-}
-
-.rowText {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  align-items: flex-start;
-  min-width: 0;
-}
-
-.tag {
-  padding: 0.7cqw 2.4cqw;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--c) 14%, transparent);
-  color: var(--c);
-  font-size: 2.9cqw;
-  font-weight: 600;
-  line-height: 1.3;
-}
-
-.rowTitle {
-  max-width: 100%;
-  margin-top: 1.2cqw;
-  overflow: hidden;
-  font-size: 4.1cqw;
-  font-weight: 600;
-  line-height: 1.3;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.rowSub {
-  margin-top: 0.4cqw;
-  font-size: 3.3cqw;
-  line-height: 1.3;
-  color: var(--muted);
-}
-
-.chev {
-  flex: none;
-  width: 4.4cqw;
-  height: 4.4cqw;
-  color: rgba(23, 20, 29, 0.35);
+/* The client's screen fills the screen area; it is slightly wider than the frame's screen, so a
+   sliver is trimmed from each side and none from the top or bottom */
+.shot {
+  object-fit: cover;
+  object-position: 50% 0;
 }
 
 /* ---------- Mobile: copy on top, arcs fan out above a smaller phone ---------- */
@@ -442,11 +320,11 @@
     --cy: 80cqw;
     --r0: 30cqw;
     --r1: 50cqw;
-    --r2: 72cqw;
-    --r3: 94cqw;
+    --r2: 74cqw;
+    --r3: 95cqw;
     --r4: 116cqw;
     --r5: 138cqw;
-    --tile: 13cqw;
+    --tile: 11.5cqw;
     --base: -90deg;
     position: relative;
     inset: auto;

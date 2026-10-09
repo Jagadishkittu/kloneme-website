@@ -72,7 +72,7 @@ function Lock({ sweep }: { sweep: number }) {
   );
 }
 
-// v9's Android sign-up: the form sits in the row beside App Store; its line and message centre below
+// v9's Notify form: it sits in the row beside App Store; its message centres below
 function useNotify() {
   const [msg, setMsg] = useState<{ text: string; err?: boolean } | null>(null);
   const submit = (e: FormEvent<HTMLFormElement>) => {
@@ -97,22 +97,16 @@ function useNotify() {
         type="email"
         placeholder={A.placeholder}
         autoComplete="email"
-        aria-describedby="get-android"
       />
       <button type="submit">{A.button}</button>
     </form>
   );
-  const notes = (
-    <>
-      <p id="get-android" className={s.androidLine}>
-        {A.line}
-      </p>
-      <p className={s.formMsg} data-err={msg?.err || undefined} role="status">
-        {msg?.text ?? ""}
-      </p>
-    </>
+  const note = (
+    <p className={s.formMsg} data-err={msg?.err || undefined} role="status">
+      {msg?.text ?? ""}
+    </p>
   );
-  return { form, notes };
+  return { form, note };
 }
 
 export default function GlassPanel() {
@@ -122,7 +116,7 @@ export default function GlassPanel() {
   const [out, setOut] = useState(false);
   const notify = useNotify();
 
-  // v9's rotating word: out, swap (word and colour), back in; paused off-screen
+  // The rotating word: out, swap (word and colour), back in; paused off-screen
   useEffect(() => {
     const el = panel.current;
     if (!el || still) return;
@@ -185,7 +179,8 @@ export default function GlassPanel() {
           </a>
           {notify.form}
         </div>
-        {notify.notes}
+        <p className={s.fine}>{closing.smallPrint}</p>
+        {notify.note}
       </div>
     </div>
   );

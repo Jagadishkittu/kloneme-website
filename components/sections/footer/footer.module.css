@@ -15,6 +15,8 @@
 .footer {
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
   position: relative;
+  /* So the wordmark can size itself to the footer's real content width (cqw) */
+  container-type: inline-size;
   overflow: clip;
   padding: clamp(40px, 6vw, 72px) var(--gut) 0;
 }
@@ -72,8 +74,11 @@
 /* ---------- The wordmark ---------- */
 .mark {
   position: relative;
-  /* Sized so the word spans the width; its lower part is cut off by the page bottom */
-  --fs: calc((100vw - 2 * var(--gut)) / 4.25);
+  /* Sized so the word spans the width; its lower part is cut off by the page bottom.
+     "KloneME" in Poppins Bold at this letter-spacing is 4.063em wide, so dividing the box width by
+     4.25 fills 96% of it. The box is the footer's content width (no scrollbar), capped at 1400px:
+     sizing from 100vw made the word wider than the box on wide screens and cut off the last "E". */
+  --fs: calc(min(100cqw, 1400px) / 4.25);
   height: calc(var(--fs) * 0.6);
   max-width: 1400px;
   margin: clamp(24px, 4vw, 48px) auto 0;

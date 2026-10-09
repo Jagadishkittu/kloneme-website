@@ -159,6 +159,39 @@ const paths = {
     </>
   ),
   download: <path d="M12 4v11M7 10.5l5 5 5-5M5 20h14" />,
+  info: (
+    <>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 11v5.5M12 7.8v.2" />
+    </>
+  ),
+  // App-screen glyphs (section 9 phone)
+  bell: <path d="M6 16.5V11a6 6 0 0112 0v5.5l1.5 2h-15zM10 20.5a2 2 0 004 0" />,
+  share: (
+    <>
+      <circle cx="18" cy="5.5" r="2.5" />
+      <circle cx="6" cy="12" r="2.5" />
+      <circle cx="18" cy="18.5" r="2.5" />
+      <path d="M8.2 10.8l7.6-4.1M8.2 13.2l7.6 4.1" />
+    </>
+  ),
+  send: <path d="M20.5 3.5L10 14M20.5 3.5l-6.5 17-4-6.5-6.5-4z" />,
+  car: (
+    <>
+      <path d="M3.5 15.5V12l2.2-5h12.6l2.2 5v3.5zM3.5 12h17" />
+      <circle cx="7.5" cy="16.5" r="1.8" />
+      <circle cx="16.5" cy="16.5" r="1.8" />
+    </>
+  ),
+  grad: <path d="M2.5 9.5L12 5l9.5 4.5L12 14zM6.5 11.5v4c1.5 1.5 3.5 2.2 5.5 2.2s4-.7 5.5-2.2v-4M21.5 9.5v5" />,
+  trophy: <path d="M8 4.5h8v5a4 4 0 01-8 0zM8 6.5H5.5a3 3 0 002.8 3.9M16 6.5h2.5a3 3 0 01-2.8 3.9M12 13.5V17M8.5 20h7l-1-3h-5z" />,
+  run: (
+    <>
+      <circle cx="14.5" cy="4.5" r="1.8" />
+      <path d="M6 21l3.5-5.5 3 2.5V13l-3-2.5L7 13M12.5 10.5l2.5 2.5h3.5M9.5 8.5l3-1.5 2 1.5" />
+    </>
+  ),
+  spark: <path d="M12 3.5l1.9 5.6 5.6 1.9-5.6 1.9L12 18.5l-1.9-5.6-5.6-1.9 5.6-1.9z" />,
   apple: (
     <path
       fill="currentColor"

@@ -33,6 +33,9 @@ const BARS = [3.6, 5.6, 7.2, 4.4, 9.6, 12.4, 7, 13, 8.4, 5.8, 11, 7.8, 5.2, 9, 1
 
 const within = (t: number, [a, b]: [number, number]) => t >= a && t < b;
 
+// Copies of the outline stacked behind the face to give the phone its thickness
+const LAYERS = 16;
+
 function KmeLogo() {
   return (
     <span className={p.logo}>
@@ -141,104 +144,118 @@ export default function PhoneDemo() {
   const selected = t >= SELECT_AT;
 
   return (
-    <div ref={ref} className={p.phone} role="img" aria-label={`KloneME app: you say “${listen.quote}” and Klo files it as a ${place.categories[0].label} goal.`}>
-      <span className={`${p.btn} ${p.btnA}`} />
-      <span className={`${p.btn} ${p.btnB}`} />
-      <span className={`${p.btn} ${p.btnC}`} />
-      <div className={p.screen} aria-hidden="true">
-        <span className={p.island} />
-        <StatusBar />
-
-        {/* Screen 1: speak a goal */}
-        <div className={`${p.scr} ${listening ? p.listening : ""}`} data-state={listenState}>
-          <TopBar />
-          <p className={p.eyebrow}>{listen.eyebrow}</p>
-          <p className={p.title}>
-            {listen.title[0]}
-            <br />
-            {listen.title[1]}
-          </p>
-          <p className={p.body}>
-            <b>{listen.bodyStrong}</b>
-            {listen.body}
-          </p>
-          <div className={p.listen}>
-            <p className={p.quote}>
-              {WORDS.map((w, i) => (
-                <span key={i} className={p.word} data-on={i < words || undefined}>
-                  {i === 0 ? "“" : ""}
-                  {w}
-                  {i === WORDS.length - 1 ? "”" : ""}{" "}
-                </span>
-              ))}
-            </p>
-            <div className={p.wave}>
-              {BARS.map((h, i) => (
-                <span
-                  key={i}
-                  className={p.bar}
-                  style={
-                    {
-                      "--h": `${h}cqw`,
-                      "--d": `${0.55 + ((i * 37) % 7) / 10}s`,
-                      "--dl": `${-((i * 53) % 9) / 10}s`,
-                    } as CSSProperties
-                  }
-                />
-              ))}
-            </div>
-            <div className={p.listenFoot}>
-              <span>
-                {listen.status} 0:0{seconds}
-              </span>
-              <span className={p.mic}>
-                <Icon name="mic" strokeWidth={2} />
-              </span>
-            </div>
-          </div>
-          <div className={p.actions}>
-            <span className={p.primary} data-pressed={within(t, PRESS_CONTINUE) || undefined}>
-              {listen.primary}
+    <div ref={ref} className={p.device} role="img" aria-label={`KloneME app: you say “${listen.quote}” and Klo files it as a ${place.categories[0].label} goal.`}>
+      {/* The body's thickness: outlines stacked behind the face, the last one casting the shadow */}
+      {Array.from({ length: LAYERS }, (_, i) => (
+        <span
+          key={i}
+          className={`${p.layer} ${i === LAYERS - 1 ? p.layerBack : ""}`}
+          style={{ "--z": i + 1, "--hi": Math.sin((Math.PI * i) / (LAYERS - 1)).toFixed(2) } as CSSProperties}
+        />
+      ))}
+      <span className={`${p.sideBtn} ${p.sideBtnA}`} />
+      <span className={`${p.sideBtn} ${p.sideBtnB}`} />
+      <div className={p.face}>
+        <div className={p.bezel}>
+          <div className={p.screen} aria-hidden="true">
+            <span className={p.notch}>
+              <i className={p.earpiece} />
+              <i className={p.cam} />
             </span>
-            <span className={p.secondary}>{listen.secondary}</span>
-          </div>
-        </div>
+            <StatusBar />
 
-        {/* Screen 2: Klo suggests a category */}
-        <div className={p.scr} data-state={placeState}>
-          <TopBar />
-          <p className={p.eyebrow}>{place.eyebrow}</p>
-          <p className={p.title}>
-            {place.title[0]}
-            <br />
-            {place.title[1]}
-          </p>
-          <p className={`${p.body} ${p.bodyMuted}`}>{place.body}</p>
-          <div className={p.goal}>{place.goal}</div>
-          <div className={p.grid}>
-            {place.categories.map((c, i) => (
-              <div
-                key={c.key}
-                className={p.tile}
-                data-selected={(c.key === "wealth" && selected) || undefined}
-                style={{ "--tile": TILE_BG[c.key], "--i": i } as CSSProperties}
-              >
-                <Image src={`/app/tile-${c.key}.png`} alt="" width={252} height={222} className={p.tileImg} />
-                <span className={p.tileLabel}>{c.label}</span>
-                {c.key === "wealth" && (
-                  <span className={p.check}>
-                    <Icon name="check" strokeWidth={3} />
+            {/* Screen 1: speak a goal */}
+            <div className={`${p.scr} ${listening ? p.listening : ""}`} data-state={listenState}>
+              <TopBar />
+              <p className={p.eyebrow}>{listen.eyebrow}</p>
+              <p className={p.title}>
+                {listen.title[0]}
+                <br />
+                {listen.title[1]}
+              </p>
+              <p className={p.body}>
+                <b>{listen.bodyStrong}</b>
+                {listen.body}
+              </p>
+              <div className={p.listen}>
+                <p className={p.quote}>
+                  {WORDS.map((w, i) => (
+                    <span key={i} className={p.word} data-on={i < words || undefined}>
+                      {i === 0 ? "“" : ""}
+                      {w}
+                      {i === WORDS.length - 1 ? "”" : ""}{" "}
+                    </span>
+                  ))}
+                </p>
+                <div className={p.wave}>
+                  {BARS.map((h, i) => (
+                    <span
+                      key={i}
+                      className={p.bar}
+                      style={
+                        {
+                          "--h": `${h}cqw`,
+                          "--d": `${0.55 + ((i * 37) % 7) / 10}s`,
+                          "--dl": `${-((i * 53) % 9) / 10}s`,
+                        } as CSSProperties
+                      }
+                    />
+                  ))}
+                </div>
+                <div className={p.listenFoot}>
+                  <span>
+                    {listen.status} 0:0{seconds}
                   </span>
-                )}
+                  <span className={p.mic}>
+                    <Icon name="mic" strokeWidth={2} />
+                  </span>
+                </div>
               </div>
-            ))}
+              <div className={p.actions}>
+                <span className={p.primary} data-pressed={within(t, PRESS_CONTINUE) || undefined}>
+                  {listen.primary}
+                </span>
+                <span className={p.secondary}>{listen.secondary}</span>
+              </div>
+            </div>
+
+            {/* Screen 2: Klo suggests a category */}
+            <div className={p.scr} data-state={placeState}>
+              <TopBar />
+              <p className={p.eyebrow}>{place.eyebrow}</p>
+              <p className={p.title}>
+                {place.title[0]}
+                <br />
+                {place.title[1]}
+              </p>
+              <p className={`${p.body} ${p.bodyMuted}`}>{place.body}</p>
+              <div className={p.goal}>{place.goal}</div>
+              <div className={p.grid}>
+                {place.categories.map((c, i) => (
+                  <div
+                    key={c.key}
+                    className={p.tile}
+                    data-selected={(c.key === "wealth" && selected) || undefined}
+                    style={{ "--tile": TILE_BG[c.key], "--i": i } as CSSProperties}
+                  >
+                    <Image src={`/app/tile-${c.key}.png`} alt="" width={252} height={222} className={p.tileImg} />
+                    <span className={p.tileLabel}>{c.label}</span>
+                    {c.key === "wealth" && (
+                      <span className={p.check}>
+                        <Icon name="check" strokeWidth={3} />
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <div className={p.actions}>
+                <span className={p.primary} data-pressed={within(t, PRESS_YES) || undefined}>
+                  {place.primary}
+                </span>
+              </div>
+              <p className={p.note}>{place.note}</p>
+            </div>
           </div>
-          <div className={p.actions}>
-            <span className={p.primary} data-pressed={within(t, PRESS_YES) || undefined}>
-              {place.primary}
-            </span>
-          </div>
-          <p className={p.note}>{place.note}</p>
         </div>
       </div>
     </div>

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
 import { twin } from "@/content/twin";
+import HeldIcon from "./HeldIcon";
 import s from "./twin.module.css";
 
 const AREAS = twin.areas;
@@ -72,6 +73,7 @@ export default function KloCarousel() {
               <button type="button" className={s.btn} onClick={() => setActive(i)} aria-current={pos === 0 ? "true" : undefined}>
                 <span className={s.avatar}>
                   <Image src={`/klo/${area.expression}.png`} alt="" width={528} height={456} sizes="(max-width: 767px) 30vw, 236px" />
+                  <HeldIcon stream={area.stream} />
                 </span>
                 <span className={s.pill}>{area.name}</span>
               </button>

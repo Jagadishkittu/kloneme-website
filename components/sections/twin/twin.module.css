@@ -272,6 +272,7 @@
 
 /* Side avatars: smaller, blurred and dimmed; the middle one is sharp and bright */
 .avatar {
+  position: relative;
   display: block;
   width: var(--av);
   height: var(--avh);
@@ -288,6 +289,55 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
+}
+
+/* Klo holding its part of life (HeldIcon.tsx), drawn in the image's own 528×456 space. In the
+   middle, the object lifts in with a little spring, then floats gently (unless it stands on the
+   floor) while a soft light sweeps across it. */
+.held {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.heldObj {
+  transform-box: view-box;
+}
+.heldSheen {
+  translate: -190px 0;
+}
+.item[data-pos="0"] .heldObj {
+  animation:
+    heldIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both,
+    heldBob 3.6s ease-in-out 0.95s infinite;
+}
+.item[data-pos="0"] .heldObj[data-ground] {
+  animation: heldIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both;
+}
+.item[data-pos="0"] .heldSheen {
+  animation: heldSheen 3.6s ease-in-out 0.7s infinite;
+}
+@keyframes heldIn {
+  from {
+    translate: 0 20px;
+    scale: 0.9;
+  }
+}
+@keyframes heldBob {
+  50% {
+    translate: 0 -4px;
+  }
+}
+@keyframes heldSheen {
+  0% {
+    translate: -190px 0;
+  }
+  45%,
+  100% {
+    translate: 190px 0;
+  }
 }
 
 .item[data-pos="0"] .avatar {

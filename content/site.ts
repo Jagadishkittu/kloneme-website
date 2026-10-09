@@ -7,8 +7,10 @@ export const site = {
 export const nav = {
   links: [
     { label: "Klo", href: "#klone" },
-    { label: "How it works", href: "#how" },
-    { label: "Privacy", href: "#privacy" },
+    // The "Simple to start, easy to manage." section now carries the how-it-works steps
+    { label: "How it works", href: "#features" },
+    // Hidden with the Privacy section
+    // { label: "Privacy", href: "#privacy" },
   ],
   cta: "Download app",
 };
@@ -18,8 +20,9 @@ export const footer = {
   label: "Footer", // v9 aria-label
   links: [
     { label: "Streams", href: "#streams" },
-    { label: "How it works", href: "#how" },
-    { label: "Privacy", href: "#privacy" },
+    { label: "How it works", href: "#features" },
+    // Hidden with the Privacy section
+    // { label: "Privacy", href: "#privacy" },
     { label: "Stories", href: "#stories" },
     { label: "Contact", href: "#contact" },
     { label: "FAQ", href: "#faq" },

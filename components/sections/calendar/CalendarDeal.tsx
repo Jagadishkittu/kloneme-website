@@ -236,7 +236,7 @@ export default function CalendarDeal({ children }: { children: ReactNode }) {
                       : undefined
                   }
                 >
-                  {/* Paper side: a page from a wall calendar */}
+                  {/* Paper side (shown when the card turns over): a page from a wall calendar */}
                   <div className={s.front}>
                     <div className={s.page} data-now={p.now || undefined}>
                       <span className={s.binding} aria-hidden="true">
@@ -260,7 +260,7 @@ export default function CalendarDeal({ children }: { children: ReactNode }) {
                     </div>
                   </div>
 
-                  {/* Twin side: the same dates as Klo's nudges, on dark glass (visual only) */}
+                  {/* Twin side (facing out): the same dates as Klo's nudges, on dark glass (visual only) */}
                   <div className={s.back} aria-hidden="true">
                     <div className={s.tile}>
                       <span className={s.aurora} />

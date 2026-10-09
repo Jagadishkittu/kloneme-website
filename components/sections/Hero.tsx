@@ -22,7 +22,7 @@ export default function Hero() {
           <br />
           {hero.headline.accent}
         </h1>
-        <p className="mt-4 max-w-[560px] text-balance text-[15px] font-medium leading-[1.55] text-muted sm:text-[17px]">
+        <p className="mt-4 max-w-[560px] text-balance text-[15px] font-medium leading-[1.55] text-muted sm:text-[17px] md:max-w-[800px]">
           {hero.sub}
         </p>
         <a
@@ -35,7 +35,7 @@ export default function Hero() {
           {hero.cta}
         </a>
         <p className="mt-4 max-w-[300px] text-[13px] font-medium leading-snug text-muted sm:max-w-none">
-          <Icon name="face" className="mr-1.5 inline-block size-4 -translate-y-px align-middle text-accent" strokeWidth={2} />
+          <Icon name="shield" className="mr-1.5 inline-block size-4 -translate-y-px align-middle text-accent" strokeWidth={2} />
           {hero.note}
         </p>
       </div>

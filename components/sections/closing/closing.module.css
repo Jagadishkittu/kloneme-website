@@ -1,11 +1,11 @@
 /* ============================================================
-   Get the app (section 13) — Glass Lock (Option A, with one big icon as in the reference)
+   Get the app (section 6, after Streams) — Glass Lock (Option A, with one big icon as in the reference)
    A dark rounded panel on the light page: a dot grid top left, glowing bottom corners, and one
    big embossed glass padlock behind the centred heading, cropped by the panel's bottom edge.
-   v9's rotating word ("Never lose track of passports. / checkups. / …") sets the colour: the
+   The rotating word ("KloneME can't read your memories. / checkups. / …") sets the colour: the
    corner glows and the tint caught in the glass ease to each word's colour, and a light runs
-   across the glass on every change. Hovering the App Store button lifts the shackle. v9's
-   Android line and Notify form sit underneath.
+   across the glass on every change. Hovering the App Store button lifts the shackle. The
+   small print sits under the App Store button and v9's Notify form.
    ============================================================ */
 
 @property --wc {
@@ -218,8 +218,8 @@
   letter-spacing: -0.02em;
 }
 
-/* v9's Notify form (same height as the App Store button) and its line, centred below */
-.androidLine {
+/* v9's Notify form (same height as the App Store button); the small print centred below */
+.fine {
   margin-top: 16px;
   font-size: 14px;
   color: rgba(255, 255, 255, 0.6);

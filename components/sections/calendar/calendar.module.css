@@ -5,12 +5,12 @@
    below, one at a time, into a fan across the heading (outer cards tilt most, the middle one sits
    lowest and straight, in front). Scrolling back up takes them away again. As the cards cover it,
    the heading fades back.
-   Each card has two sides. Paper side: a page from a wall calendar — binder rings, the period's
-   emoji and name, its events with stream-colour dots, a folded corner ("This week" is the amber
-   page). Twin side: dark glass with a slowly drifting aurora in the period's stream colours, Klo,
-   the same dates as glass nudges, and an amber bar.
-   Hover (or keyboard focus): the card straightens, lifts and turns over to its twin side, then
-   tilts towards the pointer while a soft light follows it and a light runs round its edge.
+   Each card has two sides. Twin side (facing out): dark glass with a slowly drifting aurora in the
+   period's stream colours, Klo, the dates as glass nudges, and an amber bar. Paper side: a page
+   from a wall calendar — binder rings, the period's emoji and name, its events with stream-colour
+   dots, a folded corner ("This week" is the amber page).
+   Hover (or keyboard focus): the card straightens, lifts and turns over to its light paper side,
+   then tilts towards the pointer.
    Mobile: tap the top card to turn it over, tap again to tuck it under the pile.
    JS sets --enter (section scrolling in, 0→1) and --cover (cards landing, 0→1) on the section,
    --e (that card's landing, eased, 0→1) and --px/--py (pointer, -0.5…0.5) on each card.
@@ -160,7 +160,8 @@
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 }
-.back {
+/* The twin (dark) side rests facing out; turning the card shows the paper side */
+.front {
   transform: rotateY(180deg);
 }
 
@@ -539,22 +540,6 @@
   transition: translate 0.3s var(--ease);
 }
 
-/* While turned: the edge light runs, Klo pops up and waves, the arrow nudges */
-@media (hover: hover) {
-  .card[data-in]:hover .back::after {
-    animation-play-state: running;
-  }
-  .card[data-in]:hover .klo img {
-    animation: popWave 1.3s var(--ease) 0.3s both;
-  }
-  .card[data-in]:hover .arrow {
-    translate: 1.8cqw 0;
-  }
-}
-.card[data-in] .face:focus-visible .klo img,
-.card[data-open] .klo img {
-  animation: popWave 1.3s var(--ease) 0.3s both;
-}
 
 /* ---------- Keyframes ---------- */
 @keyframes drift {
@@ -588,36 +573,6 @@
     transform: translateY(0);
   }
 }
-@keyframes popWave {
-  0% {
-    scale: 0.4;
-    translate: 0 30%;
-    rotate: 0deg;
-    opacity: 0;
-  }
-  35% {
-    scale: 1.06;
-    translate: 0 0;
-    opacity: 1;
-  }
-  50% {
-    scale: 1;
-    rotate: -9deg;
-  }
-  65% {
-    rotate: 8deg;
-  }
-  80% {
-    rotate: -5deg;
-  }
-  100% {
-    scale: 1;
-    translate: 0 0;
-    rotate: 0deg;
-    opacity: 1;
-  }
-}
-
 /* ---------- Mobile: the cards land in a pile in the middle ---------- */
 @media (max-width: 767px) {
   .section {

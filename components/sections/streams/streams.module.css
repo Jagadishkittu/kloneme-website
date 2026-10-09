@@ -46,7 +46,7 @@
   flex: none;
   flex-direction: column;
   justify-content: center;
-  width: clamp(280px, 28vw, 440px);
+  width: clamp(300px, 32vw, 500px);
   min-height: var(--ah);
   padding-right: 2vw;
 }
@@ -59,24 +59,24 @@
   color: var(--muted);
 }
 
+/* One sentence in two tones, flowing on the same lines, balanced so no word is left on its own */
 .h2 {
   margin-top: 12px;
-  font-size: clamp(32px, 3.8vw, 58px);
+  font-size: clamp(30px, 2.9vw, 46px);
   font-weight: 600;
-  line-height: 1.04;
+  line-height: 1.08;
   letter-spacing: -0.03em;
+  text-wrap: balance;
   color: var(--ink);
-}
-.h2 span {
-  display: block;
 }
 .h2Accent {
   color: var(--muted);
 }
 
 .sub {
-  max-width: 380px;
+  max-width: 420px;
   margin-top: 16px;
+  text-wrap: pretty;
   font-size: clamp(15px, 1.15vw, 17px);
   font-weight: 500;
   line-height: 1.55;
@@ -683,7 +683,7 @@
     padding-right: 0;
   }
   .h2 {
-    font-size: clamp(30px, 9vw, 40px);
+    font-size: clamp(28px, 8vw, 36px);
   }
   .screen {
     font-size: clamp(10px, 3.2cqw, 13px);

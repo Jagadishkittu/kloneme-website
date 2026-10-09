@@ -15,6 +15,195 @@
     0 30px 50px -30px rgba(23, 20, 29, 0.35);
 }
 
+/* ---------- Hero device: a bluish silver phone with a notch and real thickness ----------
+   Built in code from the client's reference. No black anywhere: the face (polished blue-silver rim,
+   a deep steel-blue glass bezel and notch, screen, a soft glare on the glass) sits at the front; copies
+   of the outline stacked behind it make the body's thickness, so the rounded blue-silver edge, its
+   antenna lines and buttons show as the phone turns (3D, inside the hero's tilt). */
+.device {
+  --depth: calc(var(--phone-w, 300px) * 0.1);
+  --glass: #24334f;
+  position: relative;
+  aspect-ratio: 9 / 19.5;
+  transform-style: preserve-3d;
+}
+
+/* Each slice of the edge: polished blue-silver metal with two antenna lines. --hi peaks on the
+   middle slices, so the rounded edge catches a bright band of light down its centre. */
+.layer {
+  position: absolute;
+  inset: 0;
+  border-radius: 15.5% / 7.2%;
+  background: linear-gradient(
+    180deg,
+    #7f8ea6 0%,
+    #d3dcea 6%,
+    #b1bed0 10.8%,
+    #5f6e88 11.2%,
+    #5f6e88 11.8%,
+    #bcc8d8 12.2%,
+    #eef3f9 30%,
+    #9fadc2 50%,
+    #e8eef6 70%,
+    #b8c4d5 87.8%,
+    #5f6e88 88.2%,
+    #5f6e88 88.8%,
+    #b1bed0 89.2%,
+    #ced8e6 94%,
+    #75849c 100%
+  );
+  box-shadow: inset 0 0 0 100vmax rgb(255 255 255 / calc(var(--hi, 0) * 0.4));
+  transform: translateZ(calc(var(--depth) * var(--z) / -16));
+}
+.layerBack {
+  box-shadow:
+    0 60px 90px -40px rgba(38, 54, 88, 0.42),
+    0 30px 50px -30px rgba(38, 54, 88, 0.28);
+}
+
+/* Buttons on the right edge, standing out of the side */
+.sideBtn {
+  position: absolute;
+  left: 100%;
+  width: calc(var(--depth) * 0.42);
+  border-radius: 999px;
+  background: linear-gradient(90deg, #8090a8, #f3f6fb 48%, #bfcadb 62%, #8090a8);
+  box-shadow:
+    inset 0 0 0 0.5px rgba(48, 66, 100, 0.4),
+    0 0 1px rgba(48, 66, 100, 0.3);
+  transform-origin: left center;
+  transform: rotateY(90deg) translateX(calc(var(--depth) * 0.29)) translateZ(0.8px);
+}
+.sideBtnA {
+  top: 26%;
+  height: 11%;
+}
+.sideBtnB {
+  top: 52%;
+  height: 7.5%;
+}
+
+/* Front: a polished blue-silver rim (metal bands with light catching the top-left and bottom-right
+   corners), a hairline gasket, then the deep steel-blue glass bezel */
+.face {
+  position: absolute;
+  inset: 0;
+  padding: 1.8%;
+  border-radius: 15.5% / 7.2%;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(255, 255, 255, 0) 16%,
+      rgba(255, 255, 255, 0) 80%,
+      rgba(255, 255, 255, 0.85) 100%
+    ),
+    linear-gradient(
+      145deg,
+      #e6edf6 0%,
+      #9aa9bf 16%,
+      #eef3f9 32%,
+      #8797b0 50%,
+      #dfe7f1 68%,
+      #a2b1c6 84%,
+      #f4f7fb 100%
+    );
+  box-shadow:
+    inset 0 0 0 0.6px rgba(255, 255, 255, 0.9),
+    inset 0 1.2px 1px rgba(255, 255, 255, 0.8),
+    inset 0 -1.2px 1px rgba(50, 66, 96, 0.3),
+    0 0 0 0.6px rgba(96, 112, 140, 0.55);
+}
+.bezel {
+  position: relative;
+  height: 100%;
+  padding: 3%;
+  border-radius: 14% / 6.5%;
+  background: var(--glass);
+  box-shadow:
+    0 0 0 1px #1f2c46,
+    0 0 0 1.6px rgba(255, 255, 255, 0.5);
+}
+/* Glass: a soft diagonal glare and a faint edge where the cover glass curves */
+.bezel::after {
+  content: "";
+  position: absolute;
+  z-index: 7;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      118deg,
+      rgba(255, 255, 255, 0.16) 0%,
+      rgba(255, 255, 255, 0.05) 24%,
+      rgba(255, 255, 255, 0) 38%,
+      rgba(255, 255, 255, 0) 78%,
+      rgba(255, 255, 255, 0.05) 100%
+    );
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.07),
+    inset 0 1px 2px rgba(255, 255, 255, 0.12);
+}
+.bezel .screen {
+  border-radius: 11.5% / 5.3%;
+}
+
+/* The notch, with its concave top corners, earpiece and camera */
+.notch {
+  position: absolute;
+  z-index: 6;
+  top: 0;
+  left: 50%;
+  width: 40cqw;
+  height: 7.4cqw;
+  translate: -50% 0;
+  border-radius: 0 0 4.4cqw 4.4cqw;
+  background: var(--glass);
+}
+.notch::before,
+.notch::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 2.2cqw;
+  height: 2.2cqw;
+}
+.notch::before {
+  right: 100%;
+  background: radial-gradient(circle at 0 100%, transparent 2.2cqw, var(--glass) calc(2.2cqw + 0.5px));
+}
+.notch::after {
+  left: 100%;
+  background: radial-gradient(circle at 100% 100%, transparent 2.2cqw, var(--glass) calc(2.2cqw + 0.5px));
+}
+.earpiece {
+  position: absolute;
+  top: 1.5cqw;
+  left: 50%;
+  width: 11cqw;
+  height: 1.1cqw;
+  translate: -50% 0;
+  border-radius: 1cqw;
+  background: #1a2640;
+}
+.cam {
+  position: absolute;
+  top: 50%;
+  left: 20%;
+  width: 3.4cqw;
+  aspect-ratio: 1;
+  translate: 0 -50%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 32%, rgba(255, 255, 255, 0.55) 0, rgba(255, 255, 255, 0) 14%),
+    radial-gradient(circle at 60% 62%, #5f7fd0 0, #2c3f7a 26%, #1c2849 58%, #151e38 100%);
+  box-shadow:
+    0 0 0 0.45cqw #1a2640,
+    0 0 0 0.7cqw #33435f;
+}
+
+/* ---------- Plain frame (used by the Problem section's phone) ---------- */
 .btn {
   position: absolute;
   width: 1.4%;

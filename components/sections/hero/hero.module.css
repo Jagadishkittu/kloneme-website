@@ -268,8 +268,11 @@
   50% { transform: translateY(-10px); }
 }
 
+/* A gentle turn (less than the reference) that shows the phone's right edge; it follows the pointer
+   a little. preserve-3d lets the phone's stacked body show its thickness. */
 .phoneTilt {
-  transform: perspective(1600px) rotateX(calc(5deg - var(--py) * 3deg)) rotateY(calc(-13deg + var(--px) * 7deg)) rotateZ(3.5deg);
+  transform: perspective(1600px) rotateX(calc(3deg - var(--py) * 3deg)) rotateY(calc(-11deg + var(--px) * 5deg)) rotateZ(2.5deg);
+  transform-style: preserve-3d;
   transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 

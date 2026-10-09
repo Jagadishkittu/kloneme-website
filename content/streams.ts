@@ -10,17 +10,17 @@ export type StreamCard = {
   color: string;
   /** Klo's expression for this stream (same pairing as the Twin section) */
   expression: Expression;
-  /** DRAFT one-liner (v9 has no stream descriptions; built from v9 facts) */
+  /** One-liner from the client (2026-10-08) */
   body: string;
   /** Where this stream's loose end used to live (v9 problem section) */
   from: { place: string; icon: IconName };
 };
 
 export const streams = {
-  // Copy from kloneme-website-v9.html (#streams)
+  // Kicker from kloneme-website-v9.html (#streams); headline, sub and the card lines from the client (2026-10-08)
   kicker: "The solution",
-  headline: { lead: "Six streams.", accent: "One twin." },
-  sub: "Every loose end gets a home. Pick a part of life and watch how KloneME handles it, step by step.",
+  headline: { lead: "Finally, all parts of your life", accent: "fits together in KloneME." },
+  sub: "Six streams, each built for a different part of life, all connected and understood by one AI.",
   label: "Streams", // v9 aria-label
   from: "From", // same label as the Problem section's phone (new microcopy)
 
@@ -32,7 +32,7 @@ export const streams = {
       icon: "plane",
       color: "var(--sky)",
       expression: "surprised",
-      body: "Trips, interviews and bookings on one timeline, with a nudge before every date.",
+      body: "Where you’ve been, where you’re going and what’s due before you leave, mapped in one place.",
       from: { place: "Calendar", icon: "cal" },
     },
     {
@@ -41,7 +41,7 @@ export const streams = {
       icon: "heart",
       color: "var(--berry)",
       expression: "helping",
-      body: "Readings, checkups and prescriptions for the whole family, ready for the next appointment.",
+      body: "Look after everyone’s health without carrying it all in your head.",
       from: { place: "Notes", icon: "note" },
     },
     {
@@ -50,7 +50,7 @@ export const streams = {
       icon: "dollar",
       color: "var(--lime)",
       expression: "focused",
-      body: "Bills, policies and renewals in one place, so nothing falls due or renews unnoticed.",
+      body: "Investments and assets tracked in one place, with no spreadsheets and no digging.",
       from: { place: "Bank app", icon: "bank" },
     },
     {
@@ -59,7 +59,7 @@ export const streams = {
       icon: "users",
       color: "var(--coral)",
       expression: "happy",
-      body: "Shared plans and turns, so everyone knows what’s next without having to ask you.",
+      body: "Run the household together with a shared calendar, chores, memories and emergency details.",
       from: { place: "Family chat", icon: "chat" },
     },
     {
@@ -68,7 +68,7 @@ export const streams = {
       icon: "brush",
       color: "var(--lilac)",
       expression: "thinking",
-      body: "Clubs, races and personal goals, tracked so your progress never gets lost.",
+      body: "Your passions deserve a place too. Track so you can see how far you’ve come.",
       from: { place: "Photos", icon: "photo" },
     },
     {
@@ -77,7 +77,7 @@ export const streams = {
       icon: "vault",
       color: "var(--lagoon)",
       expression: "neutral",
-      body: "IDs, passports and cards behind Face ID. The Vault locks itself after 5 minutes.",
+      body: "IDs and documents kept safe and within easy reach, so you’re never digging through drawers.",
       from: { place: "Sticky note", icon: "sticky" },
     },
   ] satisfies StreamCard[],

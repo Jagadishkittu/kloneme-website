@@ -4,10 +4,10 @@ export type CalEvent = { title: string; when: string; stream: StreamKey };
 export type Period = { name: string; emoji: string; now?: boolean; events: CalEvent[] };
 
 export const calendar = {
-  // Copy from kloneme-website-v9.html (#calendar)
-  kicker: "One calendar",
-  headline: { lead: "Everything, on", accent: "one family calendar." },
-  sub: "Renewals, payments, checkups and deadlines from every stream, each with a nudge early enough to act.",
+  // Eyebrow, headline and subheading from the client (2026-10-09)
+  kicker: "Built AI-first",
+  headline: { lead: "All for one,", accent: "and one for all." },
+  sub: "Other assistants do a part. This intelligence covers your whole family and all six streams, together.",
 
   // v9's five periods and their events, in v9 order. Each event's stream follows v9's colour class.
   // Emoji from the client's render of v9 (not in the repo copy of v9).

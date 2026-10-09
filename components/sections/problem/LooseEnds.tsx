@@ -1,14 +1,13 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
-import { Icon } from "@/components/ui/Icon";
-import { problem, streamColor } from "@/content/problem";
-import { StatusBar } from "../hero/PhoneDemo";
+import { problem } from "@/content/problem";
+import ShapeIcon from "./ShapeIcon";
 import p from "../hero/phone.module.css";
 import s from "./problem.module.css";
 
 const ENDS = problem.looseEnds;
-const { phone } = problem;
 
 // Ring 0 (inner) carries 4 tiles, ring 1 (outer) 6. Tiles ride the arc from one end to the other
 // (fading in and out at the ends, past the panel edge or beside the phone) and start again.
@@ -38,8 +37,8 @@ const DUR = [
 
 const ARCS = ["--r0", "--r1", "--r2", "--r3", "--r4", "--r5"];
 
-// The phone shows the first six loose ends, already filed by stream
-const FILED = ENDS.slice(0, 6);
+// Icon colours: four in turn (in v9 order), so no two neighbours share one on the rings
+const GLASS = ["var(--sky)", "var(--coral)", "var(--lime)", "var(--lilac)"];
 
 export default function LooseEnds({ children }: { children: ReactNode }) {
   const panel = useRef<HTMLDivElement>(null);
@@ -76,48 +75,20 @@ export default function LooseEnds({ children }: { children: ReactNode }) {
             ))}
           </div>
 
-          {/* Phone with the loose ends filed by stream */}
+          {/* Phone showing the client's Family screen (screenshot; it has its own status bar and island) */}
           <div className={s.phoneAt} aria-hidden="true">
             <div className={p.phone}>
               <span className={`${p.btn} ${p.btnA}`} />
               <span className={`${p.btn} ${p.btnB}`} />
               <span className={`${p.btn} ${p.btnC}`} />
               <div className={p.screen}>
-                <span className={s.glow} />
-                <span className={p.island} />
-                <StatusBar />
-                <div className={s.bar}>
-                  <span className={s.round}>
-                    <Icon name="close" strokeWidth={2} />
-                  </span>
-                  <span className={s.pill}>
-                    <Icon name="doc" strokeWidth={1.9} />
-                    <Icon name="plus" strokeWidth={2} />
-                  </span>
-                </div>
-                <p className={s.title}>{phone.title}</p>
-                <div className={s.filters}>
-                  {phone.filters.map((f) => (
-                    <span key={f}>{f}</span>
-                  ))}
-                </div>
-                <div className={s.list}>
-                  {FILED.map((e) => (
-                    <div key={e.place} className={s.rowBody} style={{ "--c": streamColor[e.stream] } as CSSProperties}>
-                      <span className={s.thumb}>
-                        <Icon name={e.icon} strokeWidth={1.8} />
-                      </span>
-                      <span className={s.rowText}>
-                        <span className={s.tag}>{e.stream}</span>
-                        <span className={s.rowTitle}>{e.item}</span>
-                        <span className={s.rowSub}>
-                          {phone.from} {e.place}
-                        </span>
-                      </span>
-                      <Icon name="arrow" strokeWidth={2} className={s.chev} />
-                    </div>
-                  ))}
-                </div>
+                <Image
+                  src={problem.screen}
+                  alt=""
+                  fill
+                  sizes="(max-width: 899px) 62vw, 26vw"
+                  className={s.shot}
+                />
               </div>
             </div>
           </div>
@@ -125,7 +96,7 @@ export default function LooseEnds({ children }: { children: ReactNode }) {
           {/* The ten places, travelling along two of the arcs */}
           <div className={s.orbit}>
             <ul className={s.tiles} aria-label={problem.looseEndsLabel}>
-              {slots.map(({ e, ring, k, from, to, count, tilt }) => {
+              {slots.map(({ e, ring, k, from, to, count, tilt }, n) => {
                 const dur = DUR[ring];
                 // Evenly spaced along the ride; the reduced-motion position is the middle of each tile's share
                 const still = from + ((to - from) * (k + 0.5)) / count;
@@ -144,13 +115,14 @@ export default function LooseEnds({ children }: { children: ReactNode }) {
                         "--tilt": `${tilt}deg`,
                         // The two rings turn opposite ways
                         "--dir": ring === 0 ? "reverse" : "normal",
-                        "--c": streamColor[e.stream],
+                        "--gc": GLASS[n % GLASS.length],
+                        "--n": n,
                       } as CSSProperties
                     }
                   >
-                    {/* A frosted tile with a wash of its stream's colour */}
+                    {/* A plain white frame with a flat icon in its own shape centred in it */}
                     <span className={s.tile}>
-                      <Icon name={e.icon} strokeWidth={1.8} />
+                      <ShapeIcon icon={e.icon} />
                       <span className={s.tip} aria-hidden="true">
                         {e.place} · <em>{e.issue}</em>
                       </span>

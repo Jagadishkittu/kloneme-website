@@ -39,10 +39,6 @@ function Feature({ f, className, children }: { f: PrivacyFeature; className: str
 export default function Privacy() {
   return (
     <section id="privacy" aria-labelledby="privacy-h" className={`${s.section} px-[var(--gut)] py-[clamp(96px,14vh,160px)]`}>
-      {/* Transition from the dark Calendar section: a light sheet whose rounded top corners flatten as it scrolls in */}
-      <span className={s.backing} aria-hidden="true" />
-      <span className={s.sheet} aria-hidden="true" />
-
       <Bento>
         {/* Intro card, with a big frosted-glass padlock whose shackle clicks shut as the section arrives */}
         <div className={`${s.card} ${s.intro}`} data-glow>

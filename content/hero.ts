@@ -28,11 +28,11 @@ export type FlowCard = Lane & {
 export type FlowItem = FlowChip | FlowCard;
 
 export const hero = {
-  // Copy from kloneme-website-v9.html (section.top9)
-  headline: { lead: "Meet your", accent: "digital twin." },
-  sub: "Your documents, health, money, travel and plans in one private place, for you or your whole family.",
+  // Headline, sub and trust line from the client (2026-10-08); the button from kloneme-website-v9.html
+  headline: { lead: "One Life, One LifeOS", accent: "designed for your family" },
+  sub: "Speak, type or scan whatever’s on your mind. KloneME is your AI-powered Life OS, here to make every part of life easier to understand, plan and enjoy.",
   cta: "Download app",
-  note: "Face ID protected · Nothing shared until you choose",
+  note: "Private by Design",
 
   // Items travelling along the lines, left → behind the phone → right, one after another.
   // Each crossing takes half the cycle and items are evenly staggered, so 3 are on screen at a time.

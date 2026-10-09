@@ -17,31 +17,13 @@
   initial-value: 0;
 }
 
-/* ---------- Section + transition in from the dark Calendar section ---------- */
+/* ---------- Section (follows the light "Get the app" section) ---------- */
 .section {
-  --sheet-r: clamp(40px, 6vw, 88px);
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
   --pop: cubic-bezier(0.3, 1.6, 0.5, 1);
   --radius: clamp(26px, 2.6vw, 40px);
   position: relative;
   isolation: isolate;
-  view-timeline: --priv block;
-}
-
-/* Dark strip behind the sheet's top corners, continuing the section above */
-.backing {
-  position: absolute;
-  inset: 0 0 auto;
-  z-index: -2;
-  height: var(--sheet-r);
-  background: var(--ink);
-}
-
-.sheet {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: var(--bg);
 }
 
 /* ---------- Bento ---------- */
@@ -1564,15 +1546,9 @@
 }
 
 /* ---------- Scroll transitions ---------- */
-/* The sheet's corners flatten, then the cards rise in one after another */
+/* The cards rise in one after another */
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
-    .sheet {
-      border-radius: var(--sheet-r) var(--sheet-r) 0 0;
-      animation: flatten linear both;
-      animation-timeline: --priv;
-      animation-range: entry 0% entry 75%;
-    }
     .card {
       animation: reveal linear both;
       animation-timeline: view();
@@ -1585,12 +1561,6 @@
     .views {
       animation-range: entry 8% entry 58%;
     }
-  }
-}
-
-@keyframes flatten {
-  to {
-    border-radius: 0 0 0 0;
   }
 }
 

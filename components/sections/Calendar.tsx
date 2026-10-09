@@ -14,7 +14,7 @@ export default function Calendar() {
         </span>
         {calendar.kicker}
       </p>
-      {/* "one family calendar." in v9's sky accent (its dark-theme shade) */}
+      {/* "and one for all." in v9's sky accent (its dark-theme shade) */}
       <h2
         id="calendar-h"
         className="mt-3 max-w-[16ch] text-balance text-[clamp(36px,5.2vw,84px)] font-semibold leading-[1.04] tracking-[-0.035em]"

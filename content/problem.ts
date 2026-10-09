@@ -13,21 +13,11 @@ export type LooseEnd = {
   stream: StreamName;
 };
 
-// Stream colours (v9 has no stream-to-colour table; follows the hero: Health berry, Travel sky)
-export const streamColor: Record<StreamName, string> = {
-  Travel: "var(--sky)",
-  Health: "var(--berry)",
-  Wealth: "var(--lime)",
-  Family: "var(--coral)",
-  Hobbies: "var(--lilac)",
-  Vault: "var(--lagoon)",
-};
-
 export const problem = {
-  // Copy from kloneme-website-v9.html (#problem)
+  // Kicker and the notes from kloneme-website-v9.html (#problem); headline and sub from the client (2026-10-08)
   kicker: "The problem",
-  headline: { lead: "Your family has loose ends", accent: "everywhere." },
-  sub: "The passport’s in a drawer. The insurance card’s in an inbox. Nana’s readings are in a notes app. And you’re the one holding it all together.",
+  headline: { lead: "Swap a dozen apps for", accent: "one AI that knows your family." },
+  sub: "Hand the remembering to KloneME’s AI. It knows your family, organises their details and lets you find any of it in seconds, with sharing always on your terms.",
   looseEndsLabel: "Examples of scattered family information", // v9 aria-label
 
   // v9's ten scattered notes, in v9 order: tiles travelling along the arcs; the first six are filed in the phone
@@ -45,11 +35,6 @@ export const problem = {
   ] satisfies LooseEnd[],
   orbit: 36, // seconds for a tile to travel the outer arc
 
-  // In-phone screen. NEW microcopy (not in v9): title and "From"; confirm with client.
-  // Filter chips are the stream names from the client.
-  phone: {
-    title: "Your twin",
-    filters: ["All", "Travel", "Health", "Wealth", "Family", "Hobbies", "Vault"],
-    from: "From",
-  },
+  // In-phone screen: the client's KME "Family" screen (screenshot from the client, 2026-10-08)
+  screen: "/app/family-screen.png",
 };
