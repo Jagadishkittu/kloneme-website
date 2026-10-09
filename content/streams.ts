@@ -24,16 +24,8 @@ export const streams = {
   from: "From", // same label as the Problem section's phone (new microcopy)
 
   // Stream names from the client; facts inside each card's screen from v9 (calendar, problem, privacy).
+  // Order from the client (2026-10-09): Health, Wealth, Family, Vault, Travel, Hobbies.
   cards: [
-    {
-      key: "travel",
-      name: "Travel",
-      icon: "plane",
-      color: "var(--sky)",
-      expression: "surprised",
-      body: "Where you’ve been, where you’re going and what’s due before you leave, mapped in one place.",
-      from: { place: "Calendar", icon: "cal" },
-    },
     {
       key: "health",
       name: "Health",
@@ -62,15 +54,6 @@ export const streams = {
       from: { place: "Family chat", icon: "chat" },
     },
     {
-      key: "hobbies",
-      name: "Hobbies",
-      icon: "brush",
-      color: "var(--lilac)",
-      expression: "thinking",
-      body: "Your passions deserve a place too. Track so you can see how far you’ve come.",
-      from: { place: "Photos", icon: "photo" },
-    },
-    {
       key: "vault",
       name: "Vault",
       icon: "vault",
@@ -78,6 +61,24 @@ export const streams = {
       expression: "neutral",
       body: "IDs and documents kept safe and within easy reach, so you’re never digging through drawers.",
       from: { place: "Sticky note", icon: "sticky" },
+    },
+    {
+      key: "travel",
+      name: "Travel",
+      icon: "plane",
+      color: "var(--sky)",
+      expression: "surprised",
+      body: "Where you’ve been, where you’re going and what’s due before you leave, mapped in one place.",
+      from: { place: "Calendar", icon: "cal" },
+    },
+    {
+      key: "hobbies",
+      name: "Hobbies",
+      icon: "brush",
+      color: "var(--lilac)",
+      expression: "thinking",
+      body: "Your passions deserve a place too. Track so you can see how far you’ve come.",
+      from: { place: "Photos", icon: "photo" },
     },
   ] satisfies StreamCard[],
 

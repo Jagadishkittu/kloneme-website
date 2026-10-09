@@ -62,14 +62,14 @@
 }
 
 /* ---------- The glass padlock ---------- */
-/* In its own column on the right, centred there and shown whole */
+/* In its own column on the right, centred there and shown whole (a little bigger, client 2026-10-09) */
 .lock {
   grid-column: 2;
   grid-row: 1;
   justify-self: center;
   align-self: center;
   width: auto;
-  height: clamp(260px, 30vw, 430px);
+  height: clamp(310px, 36vw, 520px);
   overflow: visible;
   filter: drop-shadow(0 40px 60px rgba(0, 0, 0, 0.45));
 }
@@ -211,7 +211,7 @@
   .lock {
     grid-column: 1;
     grid-row: 2;
-    height: 240px;
+    height: 290px;
     margin-top: 36px;
   }
 }
