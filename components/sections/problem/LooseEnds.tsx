@@ -1,9 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { problem } from "@/content/problem";
 import ShapeIcon from "./ShapeIcon";
+import HomeScreen from "./HomeScreen";
+import { StatusBar } from "../hero/PhoneDemo";
 import p from "../hero/phone.module.css";
 import s from "./problem.module.css";
 
@@ -75,20 +76,16 @@ export default function LooseEnds({ children }: { children: ReactNode }) {
             ))}
           </div>
 
-          {/* Phone showing the client's Family screen (screenshot; it has its own status bar and island) */}
+          {/* Phone showing the app's home screen (built in code from the client's prototype) */}
           <div className={s.phoneAt} aria-hidden="true">
             <div className={p.phone}>
               <span className={`${p.btn} ${p.btnA}`} />
               <span className={`${p.btn} ${p.btnB}`} />
               <span className={`${p.btn} ${p.btnC}`} />
               <div className={p.screen}>
-                <Image
-                  src={problem.screen}
-                  alt=""
-                  fill
-                  sizes="(max-width: 899px) 62vw, 26vw"
-                  className={s.shot}
-                />
+                <span className={p.island} />
+                <StatusBar />
+                <HomeScreen />
               </div>
             </div>
           </div>

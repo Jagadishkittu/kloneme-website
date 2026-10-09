@@ -192,6 +192,21 @@ const paths = {
     </>
   ),
   spark: <path d="M12 3.5l1.9 5.6 5.6 1.9-5.6 1.9L12 18.5l-1.9-5.6-5.6-1.9 5.6-1.9z" />,
+  // search and palette: from the client's prototype (kloneme-prototype.html)
+  search: (
+    <>
+      <circle cx="10.8" cy="10.8" r="6.3" />
+      <path d="M15.5 15.5l4.7 4.7" />
+    </>
+  ),
+  palette: (
+    <>
+      <path d="M12 3.4a8.6 8.6 0 1 0 0 17.2c1.2 0 1.9-.8 1.9-1.8 0-1.2-1-1.5-1-2.6 0-1 .8-1.8 1.8-1.8h2.3a3.7 3.7 0 0 0 3.7-3.8C20.7 6.6 16.8 3.4 12 3.4z" />
+      <circle cx="15" cy="7.6" r=".7" />
+      <circle cx="10.4" cy="7.4" r=".7" />
+      <circle cx="7.7" cy="11.2" r=".7" />
+    </>
+  ),
   apple: (
     <path
       fill="currentColor"

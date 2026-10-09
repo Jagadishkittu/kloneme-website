@@ -24,6 +24,16 @@ const COLOR = Object.fromEntries(streams.cards.map((c) => [c.key, c.color])) as 
 // Klo's expression on each card's twin side
 const KLO: Expression[] = ["helping", "focused", "surprised", "happy", "thinking"];
 
+// Each card's twin side: one dark gradient in its own hue (light end, deep end) and a brighter tone of
+// that hue for its sheen, Klo's halo and the edge light. In v9 order: plum, emerald, ocean, wine, copper.
+const TONES = [
+  { a: "#3b1f63", b: "#150b26", tone: "#8457e0" },
+  { a: "#0f4d3c", b: "#061b15", tone: "#22a87c" },
+  { a: "#123f6b", b: "#07162a", tone: "#3a83d8" },
+  { a: "#5e1a35", b: "#210913", tone: "#cc4777" },
+  { a: "#5c3313", b: "#200f06", tone: "#cf7a30" },
+];
+
 // Where each card lands, left → right: x in card widths and y in card heights from the middle of
 // the heading, r its tilt (deg), sp the extra turn it flies in with, br the twin side's bar tilt.
 // The outer cards tilt the most; the middle one sits lowest and straight, in front.
@@ -191,7 +201,6 @@ export default function CalendarDeal({ children }: { children: ReactNode }) {
             const f = FAN[i];
             const tap = ready && i === top;
             // Aurora colours: the streams of this period's events
-            const hues = p.events.map((ev) => COLOR[ev.stream]);
             return (
               <li
                 key={p.name}
@@ -202,9 +211,9 @@ export default function CalendarDeal({ children }: { children: ReactNode }) {
                 onPointerLeave={untilt}
                 style={
                   {
-                    "--c": hues[0],
-                    "--c2": hues[1] ?? hues[0],
-                    "--c3": hues[2] ?? hues[1] ?? hues[0],
+                    "--tone-a": TONES[i].a,
+                    "--tone-b": TONES[i].b,
+                    "--tone": TONES[i].tone,
                     "--fx": f.x,
                     "--fy": f.y,
                     "--fr": f.r,

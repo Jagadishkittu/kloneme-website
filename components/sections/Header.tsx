@@ -30,13 +30,11 @@ export default function Header() {
           ))}
         </ul>
         <a
-          href={site.downloadUrl}
-          target="_blank"
-          rel="noopener"
+          href={nav.cta.href}
           className="inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2.5 text-[14px] font-semibold text-bg transition-transform hover:-translate-y-px active:translate-y-0"
         >
-          <Icon name="download" className="size-4" strokeWidth={2} />
-          {nav.cta}
+          <Icon name="mail" className="size-4" strokeWidth={2} />
+          {nav.cta.label}
         </a>
       </nav>
     </header>

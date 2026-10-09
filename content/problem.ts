@@ -13,9 +13,16 @@ export type LooseEnd = {
   stream: StreamName;
 };
 
+export type HomeTile = {
+  key: "travel" | "hobbies" | "family" | "wealth" | "health" | "vault";
+  label: string;
+  icon: IconName;
+  slogan: [string, string, string];
+  meta: string;
+};
+
 export const problem = {
-  // Kicker and the notes from kloneme-website-v9.html (#problem); headline and sub from the client (2026-10-08)
-  kicker: "The problem",
+  // The notes from kloneme-website-v9.html (#problem); headline and sub from the client (2026-10-08)
   headline: { lead: "Swap a dozen apps for", accent: "one AI that knows your family." },
   sub: "Hand the remembering to KloneME’s AI. It knows your family, organises their details and lets you find any of it in seconds, with sharing always on your terms.",
   looseEndsLabel: "Examples of scattered family information", // v9 aria-label
@@ -35,6 +42,25 @@ export const problem = {
   ] satisfies LooseEnd[],
   orbit: 36, // seconds for a tile to travel the outer arc
 
-  // In-phone screen: the client's KME "Family" screen (screenshot from the client, 2026-10-08)
-  screen: "/app/family-screen.png",
+  // In-phone screen: the app's home screen, rebuilt from the client's prototype
+  // (kloneme-prototype.html, #v-home; requested 2026-10-09)
+  home: {
+    greeting: "Good morning, Maya",
+    sub: "Your life, beautifully in one place.",
+    initial: "M",
+    open: "Open",
+    // Kyoto, Reykjavik, Amalfi: back to front
+    photos: ["/app/proto/kyoto.jpg", "/app/proto/reykjavik.jpg", "/app/proto/amalfi.jpg"],
+    hobbyRing: 61, // percent
+    tiles: [
+      { key: "travel", label: "Travel", icon: "plane", slogan: ["Plan.", "Share.", "Celebrate."], meta: "12 countries · 4 of 6 trips" },
+      { key: "hobbies", label: "Hobbies", icon: "palette", slogan: ["Create.", "Learn.", "Engage."], meta: "4 hobbies · 42-day streak" },
+      { key: "family", label: "Family", icon: "users", slogan: ["Connect.", "Care.", "Organize."], meta: "5 members · 3 chores due" },
+      { key: "wealth", label: "Wealth", icon: "dollar", slogan: ["Spend.", "Save.", "Grow."], meta: "$873.6K net worth" },
+      { key: "health", label: "Health", icon: "heart", slogan: ["Track.", "Heal.", "Thrive."], meta: "Nana’s cardiology · tomorrow" },
+      { key: "vault", label: "Vault", icon: "shield", slogan: ["Store.", "Share.", "Protect."], meta: "38 documents · 1 request" },
+    ] satisfies HomeTile[],
+    ask: { title: "Ask Klone", prompt: "“What’s due before Morocco?”", klo: "/app/proto/klo-ask.webp" },
+    nav: { home: "Home", klo: "/app/proto/klo-nav.webp" },
+  },
 };

@@ -8,8 +8,7 @@ export type ContactTopic = {
 };
 
 export const contact = {
-  // Eyebrow, headline and body from the client (2026-10-09); topics and form from kloneme-website-v9.html (#contact)
-  kicker: "Get in touch",
+  // Headline and body from the client (2026-10-09); topics and form from kloneme-website-v9.html (#contact)
   headline: { lead: "Reach the team", accent: "behind KloneME." },
   sub: "Whether it’s a question, an idea or a quick hello, send us a message and the team will reply.",
   topics: [

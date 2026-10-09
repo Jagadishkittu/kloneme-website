@@ -28,10 +28,9 @@ export type FlowCard = Lane & {
 export type FlowItem = FlowChip | FlowCard;
 
 export const hero = {
-  // Headline, sub and trust line from the client (2026-10-08); the button from kloneme-website-v9.html
+  // Headline, sub and trust line from the client (2026-10-08); the store buttons are site.stores
   headline: { lead: "One Life, One LifeOS", accent: "designed for your family" },
   sub: "Speak, type or scan whatever’s on your mind. KloneME is your AI-powered Life OS, here to make every part of life easier to understand, plan and enjoy.",
-  cta: "Download app",
   note: "Private by Design",
 
   // Items travelling along the lines, left → behind the phone → right, one after another.
@@ -48,9 +47,6 @@ export const hero = {
       { kind: "card", variant: "ring", icon: "face", title: "Face ID", sub: "Unlocked", color: "var(--lilac)", lane: 60 },
     ] satisfies FlowItem[],
   },
-
-  // New microcopy for the QR card (not in v9; confirm with client)
-  qr: { title: "Download KloneME", sub: "Scan to get the app on your phone." },
 
   // App screens shown inside the phone (copy from the client's app screenshots)
   phone: {

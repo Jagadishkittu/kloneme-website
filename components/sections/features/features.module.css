@@ -1,6 +1,6 @@
 /* ============================================================
-   Section 9: "Simple to start, easy to manage." (the client's content in the Hold Story layout)
-   A warm honey-cream rounded panel with the app screen (no phone frame) in the middle, the heading on the right and the four
+   Features: "Simple to start, easy to manage." (the client's content in the Hold Story layout)
+   A soft lavender rounded panel with the app screen (no phone frame) in the middle, the heading on the right and the four
    steps on the left. On wide screens the panel pins and scrolling walks through the app: sign in,
    chat with Klonie, then Travel → Savings & goals → Hobbies → Vault, then Calendar → Chores →
    Memories → Emergency share. The step reads on the left beside a progress line with a dot per
@@ -40,12 +40,13 @@
   margin: 0 auto;
   padding: 44px 20px 36px;
   border-radius: clamp(28px, 3vw, 44px);
-  /* Warm honey cream: the brand amber softened, with a light top and a faint amber corner */
-  --panel: #fbefd9;
+  /* Soft lavender (the lilac stream colour, very light), with a light top, a lilac glow in one bottom
+     corner and a faint rose in the other: it picks up the violet steps and the app's violet and pink */
+  --panel: #f1edfa;
   background:
-    radial-gradient(60% 50% at 50% 0%, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0) 70%),
-    radial-gradient(55% 60% at 100% 100%, rgba(245, 179, 31, 0.2), rgba(245, 179, 31, 0) 70%),
-    radial-gradient(45% 50% at 0% 100%, rgba(245, 179, 31, 0.1), rgba(245, 179, 31, 0) 70%),
+    radial-gradient(60% 50% at 50% 0%, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0) 70%),
+    radial-gradient(55% 60% at 100% 100%, rgba(132, 102, 235, 0.18), rgba(132, 102, 235, 0) 70%),
+    radial-gradient(45% 50% at 0% 100%, rgba(224, 86, 155, 0.09), rgba(224, 86, 155, 0) 70%),
     var(--panel);
   transform-origin: 50% 0;
   scale: calc(0.95 + 0.05 * var(--enter, 1));

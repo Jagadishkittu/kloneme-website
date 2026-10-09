@@ -6,10 +6,6 @@ export default function Faq() {
   return (
     <section id="faq" aria-labelledby="faq-h" className={s.section}>
       <div className={s.head}>
-        <p className={s.kicker}>
-          <i aria-hidden="true" />
-          {faq.kicker}
-        </p>
         <h2 id="faq-h" className={s.h2}>
           {faq.headline.lead} <em>{faq.headline.accent}</em>
         </h2>

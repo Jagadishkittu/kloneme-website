@@ -8,8 +8,7 @@ export type FaqItem = {
 };
 
 export const faq = {
-  // Eyebrow, headline and the five questions and answers from the client (2026-10-09)
-  kicker: "FAQs",
+  // Headline and the five questions and answers from the client (2026-10-09)
   headline: { lead: "Ask before", accent: "you trust us." },
   items: [
     {

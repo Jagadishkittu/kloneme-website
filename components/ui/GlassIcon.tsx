@@ -1,5 +1,5 @@
 import type { CSSProperties, ReactNode } from "react";
-import s from "./privacy.module.css";
+import s from "./glassIcon.module.css";
 
 export type Glyph = "face" | "clock" | "eye" | "eyeoff" | "lock" | "users" | "brush" | "vault" | "dollar" | "plane" | "heart";
 
@@ -8,7 +8,7 @@ export const isGlyph = (name: string): name is Glyph => name in GLYPHS;
 const ALMOND = "M2.5 12c.6-2.5 4.5-7 9.5-7s8.9 4.5 9.5 7c-.6 2.5-4.5 7-9.5 7s-8.9-4.5-9.5-7z";
 
 // Two-tone glyphs: soft colour shapes behind (gFill), crisp deep-tone lines on top (gLine).
-// Lines marked gDraw redraw when the card is hovered; the other classes are each glyph's own motion.
+// Lines marked gDraw redraw when the tile is hovered; the other classes are each glyph’s own motion.
 const GLYPHS: Record<Glyph, ReactNode> = {
   // Face ID: a scan line passes, the corners snap in, the eyes blink
   face: (
@@ -33,7 +33,7 @@ const GLYPHS: Record<Glyph, ReactNode> = {
       <circle className={s.gHub} cx="12" cy="12" r="1.35" />
     </>
   ),
-  // See who opened what: follows the pointer (Bento sets --ex/--ey) and blinks
+  // See who opened what: blinks, and follows the pointer when a parent sets --ex/--ey
   eye: (
     <g className={s.gLid}>
       <path className={s.gFill} d={ALMOND} />

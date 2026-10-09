@@ -1,0 +1,484 @@
+/* ============================================================
+   Meet Klo — the figures wheel (client reference: the "03 Problem" layout, 2026-10-09)
+   Laid out in the reference's proportions (scaled to fit with --u; the wheel and cards sit 90 units
+   further right than the reference so the middle line has room), centred in the frame: the heading
+   centred at the top and a progress ring top right; three of the client's five figures stacked
+   on the left (big number, statement, source pill); fixed lines from the three places to a dotted
+   arc round the left half of a striped wheel — the top line from the first number to the arc's top,
+   the middle one to its left-most point, the bottom one from the last source to its bottom. The
+   wheel's right half sits behind frosted glass: a vivid blurred ring with a crisp edge down the
+   wheel's middle. Glass cards on top of it name the problems, four in view.
+   The section pins while you scroll (wide screens). The figures move up as one list: the next comes
+   in from below, the top one leaves; the wheel turns and the cards move up with them, the ones whose
+   figures are showing lit. Three resting places: figures 1–3, 2–4, 3–5. While the list moves, the
+   lines draw back to their dots on the arc and stretch out again once it settles, so they only show
+   when they point at the right figure. JS sets --s (0–2, how far the list has moved), --k (1 at a
+   resting place, 0 mid-move: how far the lines reach) and --p (0–1, the ring); each figure and card
+   has its index, --i.
+   Phones and tablets: no pin; all five figures in a plain list, the wheel's half at the edge.
+   ============================================================ */
+
+.wheel {
+  --s: 0;
+  --k: 1;
+  --p: 0;
+  position: relative;
+}
+
+.sticky {
+  display: flex;
+  height: min(100svh, 860px);
+  padding: 24px 0;
+}
+
+/* Pinned on wide screens (unless motion is reduced) */
+@media (min-width: 900px) and (prefers-reduced-motion: no-preference) {
+  .wheel {
+    height: 360svh;
+  }
+  .sticky {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    padding: 84px 0 28px; /* room for the fixed header pill */
+  }
+}
+
+.frame {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* ---------- Heading and progress ---------- */
+.head {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+.h2 {
+  max-width: 760px;
+  text-align: center;
+  font-size: clamp(26px, 2.8vw, 42px);
+  font-weight: 500;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  text-wrap: balance;
+}
+.h2Accent {
+  color: var(--muted);
+}
+
+.progress {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 10px;
+}
+.steps {
+  display: flex;
+}
+.steps button {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.steps button::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(23, 20, 29, 0.2);
+}
+.steps button[data-on]::before {
+  width: 20px;
+  background: #ee6352;
+}
+.ring {
+  width: 44px;
+  height: 44px;
+  rotate: -90deg;
+}
+.ring circle {
+  fill: none;
+  stroke: rgba(23, 20, 29, 0.1);
+  stroke-width: 6;
+}
+.ring .ringFill {
+  stroke: var(--ink);
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: calc(1 - (0.08 + var(--p) * 0.92));
+}
+
+/* ---------- Stage and canvas ---------- */
+.stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  margin-top: clamp(36px, 7vh, 84px);
+  container-type: size;
+}
+
+/* The reference's layout in its own units (--u = one reference pixel), centred in the stage */
+.canvas {
+  --u: min(calc(100cqw / 1120), calc(100cqh / 680));
+  --cx: calc(var(--u) * 733); /* the wheel's centre */
+  --cy: calc(var(--u) * 334);
+  --Rx: calc(var(--u) * 274); /* the dotted arc */
+  --Ry: calc(var(--u) * 306);
+  --Rd: calc(var(--u) * 224); /* the wheel */
+  --pitch: calc(var(--u) * 232); /* from one figure to the next */
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--u) * 1120);
+  height: calc(var(--u) * 664);
+  translate: -50% -50%;
+}
+
+/* ---------- The wheel ---------- */
+.disc,
+.blurHalf {
+  position: absolute;
+  left: calc(var(--cx) - var(--Rd));
+  top: calc(var(--cy) - var(--Rd));
+  width: calc(var(--Rd) * 2);
+  height: calc(var(--Rd) * 2);
+}
+.disc svg,
+.blurHalf svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.base {
+  fill: #fbd5c7;
+}
+
+/* Left half, sharp, turning with the list */
+.disc {
+  clip-path: inset(0 50% 0 0);
+}
+.disc svg {
+  rotate: calc(var(--s) * 40deg);
+}
+
+/* Right half behind the glass: the same wheel blurred into a vivid warm ring, cut clean down the
+   middle; it spreads out to the right under the cards */
+.blurHalf {
+  clip-path: inset(-45% -140% -45% 50%);
+}
+.blurHalf svg {
+  scale: 1.04;
+  filter: blur(calc(var(--u) * 24)) saturate(1.9) brightness(1.02);
+}
+.blurHalf::before {
+  content: "";
+  position: absolute;
+  inset: -6%;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgba(238, 99, 82, 0.25) 0%,
+    rgba(238, 99, 82, 0.15) 50%,
+    rgba(240, 96, 64, 0.85) 74%,
+    rgba(245, 140, 60, 0.35) 90%,
+    rgba(245, 179, 31, 0) 100%
+  );
+  filter: blur(calc(var(--u) * 30));
+  animation: breathe 8s ease-in-out infinite;
+}
+@keyframes breathe {
+  50% {
+    scale: 1.04;
+    opacity: 0.85;
+  }
+}
+
+/* The glass's edge: a faint light band down the wheel's middle */
+.veil {
+  position: absolute;
+  left: var(--cx);
+  top: calc(var(--cy) - var(--Ry));
+  width: calc(var(--u) * 70);
+  height: calc(var(--Ry) * 2);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0));
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 25%, #000 75%, transparent);
+  mask-image: linear-gradient(180deg, transparent, #000 25%, #000 75%, transparent);
+}
+
+/* The dotted arc round the left half */
+.arc {
+  position: absolute;
+  left: calc(var(--cx) - var(--Rx));
+  top: calc(var(--cy) - var(--Ry));
+  width: calc(var(--Rx) * 2);
+  height: calc(var(--Ry) * 2);
+  clip-path: inset(-4px 50% -4px -4px);
+}
+.arc i {
+  position: absolute;
+  inset: 0;
+  border: 1.5px dashed rgba(238, 99, 82, 0.55);
+  border-radius: 50%;
+}
+
+/* ---------- Lines to the arc (fixed), each ending in a dot ----------
+   Mid-move they draw back towards the dot (clipped from the left by --k), so a line never points at
+   a figure that isn't beside it; the dot itself stays on the arc */
+.line {
+  position: absolute;
+  height: 1.5px;
+  translate: 0 -50%;
+  clip-path: inset(-20px -20px -20px calc((1 - var(--k)) * (100% - var(--u) * 10)));
+  background: linear-gradient(90deg, rgba(238, 99, 82, 0), rgba(238, 99, 82, 0.55) 30%, #ee6352);
+}
+.line::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: calc(var(--u) * -6);
+  width: calc(var(--u) * 12);
+  height: calc(var(--u) * 12);
+  translate: 0 -50%;
+  border-radius: 50%;
+  background: #ee6352;
+  box-shadow: 0 0 0 calc(var(--u) * 4) rgba(238, 99, 82, 0.15);
+}
+/* From beside the top figure's number to the arc's top */
+.line[data-slot="0"] {
+  left: calc(var(--u) * 200);
+  top: calc(var(--cy) - var(--Ry));
+  width: calc(var(--cx) - var(--u) * 200);
+}
+/* From beside the middle figure's words to the arc's left-most point */
+.line[data-slot="1"] {
+  left: calc(var(--u) * 340);
+  top: var(--cy);
+  width: calc(var(--cx) - var(--Rx) - var(--u) * 340);
+}
+/* From beside the bottom figure's source to the arc's bottom */
+.line[data-slot="2"] {
+  left: calc(var(--u) * 200);
+  top: calc(var(--cy) + var(--Ry));
+  width: calc(var(--cx) - var(--u) * 200);
+}
+
+/* ---------- The figures ---------- */
+/* One list moving up: figure i sits (i − s) places down; full in the three places, fading out
+   above the first and below the third */
+.item {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: calc(var(--u) * 330);
+  translate: 0 calc((var(--i) - var(--s)) * var(--pitch));
+  opacity: clamp(0, min(calc((var(--i) - var(--s) + 0.5) * 2), calc((2.5 - var(--i) + var(--s)) * 2)), 1);
+}
+
+.num {
+  display: block;
+  font-size: calc(var(--u) * 56);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+
+.statement {
+  max-width: calc(var(--u) * 320);
+  min-height: calc(var(--u) * 15 * 1.55 * 3);
+  margin-top: calc(var(--u) * 18);
+  font-size: calc(var(--u) * 15);
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.source {
+  display: inline-block;
+  margin-top: calc(var(--u) * 14);
+  padding: calc(var(--u) * 9) calc(var(--u) * 13);
+  border-radius: calc(var(--u) * 10);
+  background: #fff;
+  font-size: calc(var(--u) * 14);
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--ink);
+  box-shadow:
+    0 1px 2px rgba(23, 20, 29, 0.05),
+    0 calc(var(--u) * 10) calc(var(--u) * 22) calc(var(--u) * -14) rgba(23, 20, 29, 0.3);
+}
+
+/* The problem's name beside the figure: phones only (the cards show it on wide screens) */
+.chip {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  margin-top: 10px;
+  padding: 4px 11px 4px 8px;
+  border-radius: 999px;
+  background: rgba(238, 99, 82, 0.12);
+  color: var(--coral-d);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.chip svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ---------- Glass cards over the blurred ring ---------- */
+/* Card i sits at 172 × (i − s/2) reference pixels: four in view, moving up half as far as the
+   figures. Lit while its figure is showing; fading out past the top and bottom */
+.cards {
+  position: absolute;
+  left: calc(var(--u) * 914);
+  top: 0;
+  width: calc(var(--u) * 206);
+  height: 100%;
+}
+.card {
+  --y: calc(var(--i) * 172 - var(--s) * 86); /* in reference pixels */
+  --shown: clamp(0, min(calc((var(--y) + 60) / 60), calc((582 - var(--y)) / 60)), 1);
+  --lit: clamp(0.45, min(calc((var(--i) - var(--s) + 0.6) * 1.7), calc((2.6 - var(--i) + var(--s)) * 1.7)), 1);
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: calc(var(--u) * 142);
+  padding: calc(var(--u) * 30) calc(var(--u) * 22) 0;
+  translate: 0 calc(var(--y) * var(--u));
+  opacity: calc(var(--shown) * var(--lit));
+  border-radius: calc(var(--u) * 32);
+  background: rgba(255, 255, 255, 0.56);
+  -webkit-backdrop-filter: blur(18px) saturate(1.5);
+  backdrop-filter: blur(18px) saturate(1.5);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.8),
+    0 calc(var(--u) * 22) calc(var(--u) * 44) calc(var(--u) * -26) rgba(238, 99, 82, 0.45);
+}
+.badge {
+  position: absolute;
+  top: calc(var(--u) * 14);
+  right: calc(var(--u) * 14);
+  display: grid;
+  place-items: center;
+  width: calc(var(--u) * 50);
+  height: calc(var(--u) * 50);
+  border-radius: 50%;
+  background: linear-gradient(145deg, #f7944c, #ee6352 62%, #e3503f);
+  color: #fff;
+  box-shadow: 0 calc(var(--u) * 8) calc(var(--u) * 18) calc(var(--u) * -8) rgba(238, 99, 82, 0.85);
+}
+.badge svg {
+  width: calc(var(--u) * 21);
+  height: calc(var(--u) * 21);
+}
+.cardLabel {
+  max-width: calc(var(--u) * 130);
+  font-size: calc(var(--u) * 16.5);
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+/* ---------- Phones and tablets ----------
+   No pin: all five figures in a list (number, the problem's name, words, source), the wheel's
+   left half at the right edge behind them. */
+@media (max-width: 899px) {
+  .sticky {
+    height: auto;
+    padding: 0;
+  }
+  .ring,
+  .steps {
+    display: none;
+  }
+  .stage {
+    flex: none;
+    margin-top: 28px;
+    container-type: inline-size;
+  }
+  .canvas {
+    --Rd: clamp(110px, 34cqw, 170px);
+    --cx: calc(100cqw + var(--Rd) * 0.25);
+    --cy: calc(var(--Rd) + 20px);
+    position: relative;
+    isolation: isolate;
+    left: auto;
+    top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 34px;
+    width: 100%;
+    height: auto;
+    translate: none;
+  }
+  .blurHalf,
+  .veil,
+  .arc,
+  .line,
+  .cards {
+    display: none;
+  }
+  .disc {
+    z-index: -1;
+    opacity: 0.55;
+  }
+  .disc svg {
+    rotate: none;
+  }
+  .item {
+    position: relative;
+    width: calc(100% - 40px);
+    translate: none;
+    opacity: 1;
+  }
+  .num {
+    font-size: clamp(38px, 11cqw, 52px);
+  }
+  .chip {
+    display: flex;
+  }
+  .statement {
+    max-width: 440px;
+    min-height: 0;
+    margin-top: 12px;
+    font-size: 15px;
+  }
+  .source {
+    margin-top: 12px;
+    padding: 7px 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    box-shadow:
+      0 1px 2px rgba(23, 20, 29, 0.05),
+      0 10px 22px -14px rgba(23, 20, 29, 0.3);
+  }
+}
+
+/* ---------- Pausing ---------- */
+.wheel[data-paused] .blurHalf::before {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wheel *,
+  .wheel *::before,
+  .wheel *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

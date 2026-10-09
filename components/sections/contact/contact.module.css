@@ -20,25 +20,7 @@
   margin: 0 auto;
 }
 
-.kicker {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-.kicker i {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--sky);
-}
-
 .h2 {
-  margin-top: 12px;
   font-size: clamp(30px, 3.3vw, 50px);
   font-weight: 600;
   line-height: 1.05;
@@ -410,9 +392,9 @@
     gap: clamp(40px, 6vw, 96px);
     max-width: 1080px;
   }
+  /* Scrolls with the section (it used to stick under the header); centred beside the cards */
   .copy {
-    position: sticky;
-    top: 120px;
+    align-self: center;
   }
   .pickView {
     display: block;

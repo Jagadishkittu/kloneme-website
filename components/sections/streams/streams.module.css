@@ -51,17 +51,8 @@
   padding-right: 2vw;
 }
 
-.kicker {
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
 /* One sentence in two tones, flowing on the same lines, balanced so no word is left on its own */
 .h2 {
-  margin-top: 12px;
   font-size: clamp(30px, 2.9vw, 46px);
   font-weight: 600;
   line-height: 1.08;

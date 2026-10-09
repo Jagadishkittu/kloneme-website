@@ -83,10 +83,6 @@ export default function ReadAlong() {
       <span className={s.sheet} aria-hidden="true" />
       <div className={s.sticky}>
         <div className={s.col}>
-          <p className={s.kicker}>
-            <i aria-hidden="true" />
-            {stories.kicker}
-          </p>
           <h2 id="stories-h" className={s.h2}>
             <span className={s.lead}>{stories.headline.lead}</span>{" "}
             <span className={s.accent}>{stories.headline.accent}</span>

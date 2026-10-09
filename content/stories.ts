@@ -20,11 +20,10 @@ export type Story = {
 };
 
 export const stories = {
-  // Kicker, headline, subline and note from kloneme-website-v9.html (#stories). The stories are the
+  // Headline, subline and note from kloneme-website-v9.html (#stories). The stories are the
   // three complete cards in the client's render of v9's story row (2026-10-09); v9's file itself has
   // no story text. The two cut-off cards in that render (the first, "Wait, what?", and Lakshmi V.)
   // are left out until the client sends their full text.
-  kicker: "Stories",
   headline: { lead: "What changes when it’s", accent: "all in one place." },
   sub: "Families spread across cities and countries, and the moments KloneME made easier.",
   note: "Illustrative stories written for the KloneME prototype. Names and details are placeholders until real customer reviews are added.",

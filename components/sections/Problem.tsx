@@ -6,13 +6,9 @@ export default function Problem() {
     <section id="problem" aria-labelledby="problem-h" className="bg-bg pb-[clamp(72px,11vh,128px)]">
       <LooseEnds>
         <div className="w-full max-w-[430px]">
-          <p className="flex items-center gap-2.5 text-[12px] font-semibold uppercase tracking-[0.14em] text-ink/70">
-            <span className="h-px w-7 bg-ink/40" aria-hidden="true" />
-            {problem.kicker}
-          </p>
           <h2
             id="problem-h"
-            className="mt-4 text-balance text-[clamp(28px,2.8vw,46px)] font-semibold leading-[1.06] tracking-[-0.03em]"
+            className="text-balance text-[clamp(28px,2.8vw,46px)] font-semibold leading-[1.06] tracking-[-0.03em]"
           >
             <span className="text-ink">{problem.headline.lead}</span>{" "}
             <span className="text-ink/55">{problem.headline.accent}</span>

@@ -1,11 +1,10 @@
 import { Icon } from "@/components/ui/Icon";
+import { StoreButtons } from "@/components/ui/StoreButtons";
 import { hero } from "@/content/hero";
-import { site } from "@/content/site";
 import Flow from "./hero/Flow";
 import HeroStage from "./hero/HeroStage";
 import LightLines from "./hero/LightLines";
 import PhoneDemo from "./hero/PhoneDemo";
-import QrCard from "./hero/QrCard";
 import s from "./hero/hero.module.css";
 
 export default function Hero() {
@@ -25,15 +24,7 @@ export default function Hero() {
         <p className="mt-4 max-w-[560px] text-balance text-[15px] font-medium leading-[1.55] text-muted sm:text-[17px] md:max-w-[800px]">
           {hero.sub}
         </p>
-        <a
-          href={site.downloadUrl}
-          target="_blank"
-          rel="noopener"
-          className="mt-6 inline-flex h-[52px] items-center gap-2.5 rounded-full bg-ink px-7 text-[15px] font-semibold text-bg shadow-[0_14px_30px_-14px_rgba(23,20,29,0.6)] transition-transform hover:-translate-y-0.5 active:translate-y-0"
-        >
-          <Icon name="download" className="size-[18px]" strokeWidth={2} />
-          {hero.cta}
-        </a>
+        <StoreButtons className="mt-6 justify-center" />
         <p className="mt-4 max-w-[300px] text-[13px] font-medium leading-snug text-muted sm:max-w-none">
           <Icon name="shield" className="mr-1.5 inline-block size-4 -translate-y-px align-middle text-accent" strokeWidth={2} />
           {hero.note}
@@ -53,8 +44,6 @@ export default function Hero() {
           </div>
         </div>
       </div>
-
-      <QrCard />
     </HeroStage>
   );
 }

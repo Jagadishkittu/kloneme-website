@@ -1,0 +1,419 @@
+/* ============================================================
+   The app's home screen in the Problem section's phone, rebuilt from the client's prototype
+   (kloneme-prototype.html, #v-home). Sizes are prototype pixels × --k (its screen is 405px wide);
+   the phone's screen is the container.
+   ============================================================ */
+
+.home {
+  --k: calc(100cqw / 405);
+  position: absolute;
+  inset: 0;
+  isolation: isolate;
+  overflow: hidden;
+  padding: calc(var(--k) * 62) calc(var(--k) * 20) 0;
+  background: #fbf9f7;
+  color: var(--ink);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* The soft pastel wash behind the top of the screen */
+.home::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0 0 auto 0;
+  height: calc(var(--k) * 420);
+  opacity: 0.55;
+  background:
+    radial-gradient(90% 55% at 50% 36%, #fff4d6 0%, rgba(255, 244, 214, 0) 70%),
+    linear-gradient(170deg, #ffe0ea 0%, #fff1e2 38%, #e3f7ee 72%, #e2e2ff 100%);
+  mask-image: linear-gradient(#000 40%, transparent);
+}
+
+.ic {
+  width: calc(var(--k) * 21);
+  height: calc(var(--k) * 21);
+}
+
+/* ---------- Top bar + greeting ---------- */
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: calc(var(--k) * 14);
+}
+.logo {
+  width: auto;
+  height: calc(var(--k) * 30);
+}
+.acts {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--k) * 8);
+}
+.iconBtn {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: calc(var(--k) * 44);
+  height: calc(var(--k) * 44);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.75);
+  box-shadow: 0 calc(var(--k) * 2) calc(var(--k) * 10) rgba(0, 0, 0, 0.06);
+}
+.pip {
+  position: absolute;
+  top: calc(var(--k) * 10);
+  right: calc(var(--k) * 11);
+  width: calc(var(--k) * 8);
+  height: calc(var(--k) * 8);
+  border-radius: 50%;
+  background: #ff5a4e;
+  border: calc(var(--k) * 2) solid #fff;
+}
+.me {
+  display: grid;
+  place-items: center;
+  width: calc(var(--k) * 42);
+  height: calc(var(--k) * 42);
+  border-radius: 50%;
+  background: linear-gradient(135deg, #9463ff, #e0569b);
+  color: #fff;
+  font-size: calc(var(--k) * 16);
+  font-weight: 700;
+  box-shadow:
+    0 0 0 calc(var(--k) * 2.5) #fff,
+    0 calc(var(--k) * 6) calc(var(--k) * 14) calc(var(--k) * -6) rgba(123, 63, 228, 0.7);
+}
+
+.greet {
+  margin: calc(var(--k) * 4) 0 calc(var(--k) * 2);
+  font-size: calc(var(--k) * 30);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+}
+.greetSub {
+  font-size: calc(var(--k) * 14.5);
+  color: var(--muted);
+}
+
+/* ---------- Stream tiles ---------- */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: calc(var(--k) * 10);
+  margin-top: calc(var(--k) * 18);
+}
+
+.tile {
+  --go: #111;
+  --go-bg: #fff;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: calc(var(--k) * 178);
+  padding: calc(var(--k) * 14);
+  border-radius: calc(var(--k) * 26);
+  color: #fff;
+}
+
+.pill {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--k) * 6);
+  height: calc(var(--k) * 28);
+  padding: 0 calc(var(--k) * 11) 0 calc(var(--k) * 8);
+  border-radius: calc(var(--k) * 14);
+  background: rgba(255, 255, 255, 0.22);
+  font-size: calc(var(--k) * 12.5);
+  font-weight: 700;
+}
+.pillIc {
+  width: calc(var(--k) * 16);
+  height: calc(var(--k) * 16);
+}
+
+.slogan {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  margin-top: auto;
+  font-size: calc(var(--k) * 20);
+  font-weight: 700;
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.meta {
+  position: relative;
+  z-index: 2;
+  margin-top: calc(var(--k) * 6);
+  font-size: calc(var(--k) * 11.5);
+  opacity: 0.8;
+}
+
+.go {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--k) * 4);
+  height: calc(var(--k) * 28);
+  margin-top: calc(var(--k) * 10);
+  padding: 0 calc(var(--k) * 10);
+  border-radius: calc(var(--k) * 14);
+  background: var(--go-bg);
+  color: var(--go);
+  font-size: calc(var(--k) * 12);
+  font-weight: 700;
+}
+.goIc {
+  width: calc(var(--k) * 14);
+  height: calc(var(--k) * 14);
+}
+
+/* Large faded stream icon in the top right */
+.art {
+  position: absolute;
+  z-index: 1;
+  right: calc(var(--k) * -22);
+  top: calc(var(--k) * 18);
+  width: calc(var(--k) * 120);
+  height: calc(var(--k) * 120);
+  opacity: 0.18;
+  rotate: -12deg;
+}
+
+/* Travel: three photos fanned out */
+.travel {
+  --go: #111;
+  --go-bg: #ffd400;
+  min-height: calc(var(--k) * 258);
+  background:
+    radial-gradient(90% 60% at 80% 10%, #3a3212 0%, rgba(58, 50, 18, 0) 60%),
+    #0b0b0c;
+}
+.travel .pill {
+  background: #ffd400;
+  color: #111;
+}
+.travel .meta {
+  color: #ffd400;
+  opacity: 1;
+}
+.photos {
+  position: absolute;
+  z-index: 1;
+  right: calc(var(--k) * -18);
+  top: calc(var(--k) * 40);
+  width: calc(var(--k) * 120);
+  height: calc(var(--k) * 130);
+}
+.photos img {
+  position: absolute;
+  width: calc(var(--k) * 66);
+  height: calc(var(--k) * 86);
+  object-fit: cover;
+  border: calc(var(--k) * 2.5) solid #fff;
+  border-radius: calc(var(--k) * 12);
+  box-shadow: 0 calc(var(--k) * 12) calc(var(--k) * 20) rgba(0, 0, 0, 0.5);
+}
+.photos img:nth-child(1) {
+  left: 0;
+  top: calc(var(--k) * 16);
+  rotate: -10deg;
+}
+.photos img:nth-child(2) {
+  z-index: 2;
+  left: calc(var(--k) * 36);
+  top: 0;
+  rotate: 7deg;
+}
+.photos img:nth-child(3) {
+  z-index: 3;
+  left: calc(var(--k) * 22);
+  top: calc(var(--k) * 54);
+  width: calc(var(--k) * 62);
+  height: calc(var(--k) * 70);
+  rotate: -2deg;
+}
+
+/* Hobbies: progress ring */
+.hobbies {
+  --go: #c2410c;
+  min-height: calc(var(--k) * 258);
+  background:
+    radial-gradient(80% 60% at 90% 0%, #ffd0a8 0%, rgba(255, 208, 168, 0) 60%),
+    linear-gradient(165deg, #ffa55f 0%, #ff7a2f 60%, #ef5f1c 100%);
+}
+.ring {
+  position: absolute;
+  z-index: 1;
+  right: calc(var(--k) * 10);
+  top: calc(var(--k) * 46);
+  width: calc(var(--k) * 92);
+  height: calc(var(--k) * 92);
+}
+
+.family {
+  --go: #4a1fa8;
+  background:
+    radial-gradient(90% 70% at 100% 0%, #c9a8ff 0%, rgba(201, 168, 255, 0) 60%),
+    linear-gradient(160deg, #9463ff 0%, #6a2fe0 100%);
+}
+.wealth {
+  --go: #06231a;
+  background:
+    radial-gradient(90% 70% at 100% 0%, rgba(0, 229, 160, 0.55) 0%, rgba(0, 229, 160, 0) 60%),
+    linear-gradient(160deg, #0d4a36 0%, #06231a 100%);
+}
+.wealth .pill {
+  background: rgba(0, 229, 160, 0.25);
+  color: #b6ffe6;
+}
+.wealth .meta {
+  color: #7dffd0;
+}
+.health {
+  --go: #045c7a;
+  color: #03384a;
+  background:
+    radial-gradient(90% 70% at 100% 0%, #d6f6ff 0%, rgba(214, 246, 255, 0) 60%),
+    linear-gradient(160deg, #7fe3ff 0%, #12b8ec 100%);
+}
+.health .pill {
+  background: rgba(255, 255, 255, 0.55);
+}
+.health .art {
+  opacity: 0.12;
+}
+.vault {
+  --go: #8a1c4a;
+  background:
+    radial-gradient(90% 70% at 100% 0%, #ffd1e2 0%, rgba(255, 209, 226, 0) 60%),
+    linear-gradient(160deg, #ff8fb8 0%, #e0457f 100%);
+}
+.family .meta,
+.wealth .meta,
+.health .meta,
+.vault .meta {
+  opacity: 1;
+}
+
+/* ---------- Ask Klone (mostly under the bottom bar) ---------- */
+.ask {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--k) * 12);
+  margin-top: calc(var(--k) * 12);
+  padding: calc(var(--k) * 8);
+  border-radius: calc(var(--k) * 26);
+  background: #17141d;
+  color: #fff;
+  box-shadow: 0 calc(var(--k) * 16) calc(var(--k) * 30) calc(var(--k) * -16) rgba(23, 20, 29, 0.6);
+}
+.askKlo {
+  flex: none;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  width: calc(var(--k) * 52);
+  height: calc(var(--k) * 52);
+  border-radius: calc(var(--k) * 18);
+  background: radial-gradient(circle at 50% 35%, #fff8e6, #ffd98a);
+}
+.askKlo img {
+  width: calc(var(--k) * 44);
+  height: auto;
+  margin-top: calc(var(--k) * 8);
+}
+.askText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.askText b {
+  font-size: calc(var(--k) * 15.5);
+}
+.askText span {
+  font-size: calc(var(--k) * 12.5);
+  color: #b9b4c2;
+}
+.askGo {
+  display: grid;
+  place-items: center;
+  width: calc(var(--k) * 44);
+  height: calc(var(--k) * 44);
+  border-radius: 50%;
+  background: #ffd46b;
+  color: #17141d;
+}
+
+/* ---------- Bottom bar ---------- */
+.nav {
+  position: absolute;
+  z-index: 4;
+  left: calc(var(--k) * 16);
+  right: calc(var(--k) * 16);
+  bottom: calc(var(--k) * 26);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: calc(var(--k) * 68);
+  padding: 0 calc(var(--k) * 10);
+  border-radius: calc(var(--k) * 34);
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  box-shadow:
+    0 calc(var(--k) * 18) calc(var(--k) * 40) calc(var(--k) * -12) rgba(30, 20, 50, 0.28),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+}
+.navBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--k) * 7);
+  height: calc(var(--k) * 48);
+  min-width: calc(var(--k) * 48);
+  padding: 0 calc(var(--k) * 12);
+  border-radius: calc(var(--k) * 24);
+  color: var(--muted);
+  font-size: calc(var(--k) * 13.5);
+  font-weight: 600;
+}
+.navOn {
+  padding: 0 calc(var(--k) * 16);
+  background: var(--ink);
+  color: #fff;
+}
+.navIc {
+  width: calc(var(--k) * 22);
+  height: calc(var(--k) * 22);
+}
+.kloBtn {
+  display: grid;
+  place-items: center;
+  width: calc(var(--k) * 58);
+  height: calc(var(--k) * 58);
+  margin-top: calc(var(--k) * -26);
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 35%, #fff8e6, #ffe3a1);
+  box-shadow:
+    0 calc(var(--k) * 12) calc(var(--k) * 24) calc(var(--k) * -6) rgba(201, 138, 18, 0.55),
+    0 0 0 calc(var(--k) * 4) rgba(255, 255, 255, 0.9);
+}
+.kloBtn img {
+  width: calc(var(--k) * 44);
+  height: auto;
+  margin-top: calc(var(--k) * 4);
+}

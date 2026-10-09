@@ -17,8 +17,7 @@ export type StreamCard = {
 };
 
 export const streams = {
-  // Kicker from kloneme-website-v9.html (#streams); headline, sub and the card lines from the client (2026-10-08)
-  kicker: "The solution",
+  // Headline, sub and the card lines from the client (2026-10-08)
   headline: { lead: "Finally, all parts of your life", accent: "fits together in KloneME." },
   sub: "Six streams, each built for a different part of life, all connected and understood by one AI.",
   label: "Streams", // v9 aria-label

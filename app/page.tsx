@@ -7,8 +7,6 @@ import Footer from "@/components/sections/Footer";
 import Header from "@/components/sections/Header";
 import Hero from "@/components/sections/Hero";
 import MeetKlo from "@/components/sections/MeetKlo";
-// Privacy is hidden for now; restore the import and <Privacy /> below to bring it back
-// import Privacy from "@/components/sections/Privacy";
 import Problem from "@/components/sections/Problem";
 import Stories from "@/components/sections/Stories";
 import Streams from "@/components/sections/Streams";
@@ -25,7 +23,6 @@ export default function Home() {
         <Problem />
         <Streams />
         <Closing />
-        {/* <Privacy /> */}
         <Features />
         <Calendar />
         <Stories />

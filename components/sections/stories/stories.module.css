@@ -68,25 +68,7 @@
   margin: 0 auto;
 }
 
-.kicker {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-.kicker i {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--accent);
-}
-
 .h2 {
-  margin-top: 12px;
   font-size: clamp(28px, 2.9vw, 44px);
   font-weight: 600;
   line-height: 1.06;

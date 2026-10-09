@@ -107,7 +107,6 @@ export default function StreamsRail() {
         <div ref={track} className={s.track}>
           {/* Title card: scrolls away with the row */}
           <div className={s.intro}>
-            <p className={s.kicker}>{streams.kicker}</p>
             <h2 id="streams-h" className={s.h2}>
               <span>{streams.headline.lead}</span> <span className={s.h2Accent}>{streams.headline.accent}</span>
             </h2>

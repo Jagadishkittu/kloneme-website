@@ -287,13 +287,6 @@
   width: calc(var(--u) * 26);
 }
 
-/* The client's screen fills the screen area; it is slightly wider than the frame's screen, so a
-   sliver is trimmed from each side and none from the top or bottom */
-.shot {
-  object-fit: cover;
-  object-position: 50% 0;
-}
-
 /* ---------- Mobile: copy on top, arcs fan out above a smaller phone ---------- */
 @media (max-width: 899px) {
   .panel {

@@ -41,8 +41,9 @@ export default function Pattern({ kind, still }: { kind: StreamKey; still: boole
             <circle
               key={i}
               className={s.dot}
-              cx={Math.cos((i * Math.PI) / 3) * 58}
-              cy={Math.sin((i * Math.PI) / 3) * 58}
+              // Rounded so the server and the browser write the same number (no hydration mismatch)
+              cx={+(Math.cos((i * Math.PI) / 3) * 58).toFixed(2)}
+              cy={+(Math.sin((i * Math.PI) / 3) * 58).toFixed(2)}
               r="11"
               fill="currentColor"
               style={{ animationDelay: `${i * 0.25}s` }}
